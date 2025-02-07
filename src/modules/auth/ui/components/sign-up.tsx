@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -15,8 +14,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { Loader2, X } from "lucide-react";
 import { signUp } from "@/lib/auth-client";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 export function SignUp() {
   const [firstName, setFirstName] = useState("");
@@ -28,6 +27,8 @@ export function SignUp() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  const { toast } = useToast();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -50,7 +51,7 @@ export function SignUp() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4">
+        <form className="grid gap-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="first-name">First name</Label>
@@ -88,6 +89,7 @@ export function SignUp() {
                 setEmail(e.target.value);
               }}
               value={email}
+              autoComplete="email"
             />
           </div>
           <div className="grid gap-2">
@@ -149,13 +151,23 @@ export function SignUp() {
             type="submit"
             className="w-full"
             disabled={loading}
-            onClick={async () => {
+            onClick={async (e) => {
+              e.preventDefault();
+              if (password !== passwordConfirmation) {
+                toast({
+                  title: "Error",
+                  description: "Passwords do not match",
+                });
+                setPassword("");
+                setPasswordConfirmation("");
+                return;
+              }
               await signUp.email({
                 email,
                 password,
                 name: `${firstName} ${lastName}`,
                 image: image ? await convertImageToBase64(image) : "",
-                callbackURL: "/dashboard",
+                callbackURL: "/",
                 fetchOptions: {
                   onResponse: () => {
                     setLoading(false);
@@ -164,10 +176,13 @@ export function SignUp() {
                     setLoading(true);
                   },
                   onError: (ctx) => {
-                    toast.error(ctx.error.message);
+                    toast({
+                      title: "Error",
+                      description: ctx.error.message,
+                    });
                   },
                   onSuccess: async () => {
-                    router.push("/dashboard");
+                    router.push("/");
                   },
                 },
               });
@@ -179,15 +194,8 @@ export function SignUp() {
               "Create an account"
             )}
           </Button>
-        </div>
+        </form>
       </CardContent>
-      <CardFooter>
-        <div className="flex w-full justify-center border-t py-4">
-          <p className="text-center text-xs text-neutral-500">
-            Secured by <span className="text-orange-400">better-auth.</span>
-          </p>
-        </div>
-      </CardFooter>
     </Card>
   );
 }
