@@ -1,4 +1,4 @@
-import { SignUp } from "../../../modules/auth/ui/components/sign-up";
+import { SignUp } from "../../../modules/auth/sign-up";
 
 function Page() {
   return <SignUp />;
