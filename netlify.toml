@@ -1,2 +1,7 @@
 [build]
-  command = "npm install --legacy-peer-deps && npm run build"
+  command = "curl -fsSL https://bun.sh/install | bash && export PATH=$HOME/.bun/bin:$PATH && bun install && bun run build"
+  publish = "dist"  # Change this if your build output folder is different
+
+[context.production.environment]
+  BUN_INSTALL = "$HOME/.bun"
+  PATH = "$BUN_INSTALL/bin:$PATH"
