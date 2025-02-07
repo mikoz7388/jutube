@@ -7,4 +7,4 @@
   BUN_INSTALL = "$HOME/.bun"
   PATH = "$HOME/.bun/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
   NODE_VERSION = "18"
-  NEXT_PUBLIC_NETLIFY = "true"
+  PYTHON_VERSION = "3.11"
