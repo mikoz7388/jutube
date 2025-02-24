@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,11 +9,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
+import { ClapperboardIcon, LogOutIcon } from "lucide-react";
+import Link from "next/link";
 
 export function UserDropdown({ imageURL }: { imageURL: string | undefined }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger>
         <Avatar>
           <AvatarImage src={imageURL} />
           <AvatarFallback>CN</AvatarFallback>
@@ -21,12 +24,25 @@ export function UserDropdown({ imageURL }: { imageURL: string | undefined }) {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={async () => {
-            await authClient.signOut();
-          }}
-        >
-          Sign out
+        <DropdownMenuItem>
+          <Button
+            onClick={async () => {
+              await authClient.signOut();
+            }}
+            variant={"ghost"}
+            className="p-0"
+          >
+            <LogOutIcon />
+            Sign out
+          </Button>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>
+          <Button variant={"ghost"} asChild className="p-0">
+            <Link href={"/studio"}>
+              <ClapperboardIcon /> Studio
+            </Link>
+          </Button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

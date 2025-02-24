@@ -24,6 +24,7 @@ export function AuthButton() {
       ) : (
         <Button
           variant={"link"}
+          asChild
           className="rounded-full border-blue-500/20 px-4 py-2 text-sm font-medium text-blue-600 shadow-none hover:text-blue-500 [&_svg]:size-5"
         >
           <UserDropdown imageURL={session.user.image ?? undefined} />
