@@ -79,7 +79,7 @@ export function FilterCarousel({
                 variant={!value ? "default" : "secondary"}
                 className="cursor-pointer whitespace-nowrap rounded-lg px-3 py-1 text-sm"
               >
-                All{JSON.stringify(value)}
+                All
               </Badge>
             </CarouselItem>
           )}

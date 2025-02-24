@@ -13,7 +13,13 @@ interface CategoriesSectionProps {
 export function CategoriresSection({ categoryId }: CategoriesSectionProps) {
   return (
     <Suspense
-      fallback={<FilterCarousel isLoading data={[]} onSelect={() => {}} />}
+      fallback={
+        <FilterCarousel
+          isLoading
+          data={[] /* unhappy about that*/}
+          onSelect={() => {}}
+        />
+      }
     >
       <ErrorBoundary fallback={<p>Something went wrong</p>}>
         <CategoriresSectionSuspense categoryId={categoryId} />
