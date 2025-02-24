@@ -8,18 +8,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { UserAvatar } from "@/components/user-avatar";
 import { authClient } from "@/lib/auth-client";
 import { ClapperboardIcon, LogOutIcon } from "lucide-react";
 import Link from "next/link";
 
-export function UserDropdown({ imageURL }: { imageURL: string | undefined }) {
+export function UserDropdown({
+  imageURL,
+  name,
+}: {
+  imageURL: string | undefined;
+  name: string;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <Avatar>
-          <AvatarImage src={imageURL} />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
+        <UserAvatar imageUrl={imageURL} name={name} size={"lg"} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
