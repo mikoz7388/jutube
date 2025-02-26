@@ -13,7 +13,7 @@ export const categories = pgTable(
     name: text("name").notNull().unique(),
     description: text("description"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    cupdatedAt: timestamp("updated_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (t) => [uniqueIndex("name_idx").on(t.name)],
 );

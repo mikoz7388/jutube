@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { user as userSchema } from "@/db/schema/auth";
+import { users as userSchema } from "@/db/schema/auth";
 import { auth } from "@/lib/auth";
 import { ratelimit } from "@/lib/ratelimit";
 import { initTRPC, TRPCError } from "@trpc/server";
