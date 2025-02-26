@@ -59,6 +59,7 @@ export const protectedProcedure = t.procedure.use(
       ctx: {
         ...ctx,
         user,
+        userId: user.id,
       },
     });
   },
