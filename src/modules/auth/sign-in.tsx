@@ -11,26 +11,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { signIn } from "@/lib/auth-client";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-export default function SignIn() {
+export default function SignIn({ redirectTo }: { redirectTo: string }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [redirectTo, setRiderectTo] = useState("/");
-
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const redirect = searchParams.get("redirectTo");
-    setRiderectTo(() => redirect || "/");
-  }, [searchParams]);
 
   const handleSignIn = async () => {
     setLoading(true);
