@@ -17,10 +17,11 @@ export function StudioUploadModal() {
         variant: "default",
       });
     },
-    onError: () => {
+    onError: (error) => {
       toast({
         title: "Something went wrong",
         variant: "destructive",
+        description: error.message,
       });
     },
   });

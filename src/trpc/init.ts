@@ -52,7 +52,10 @@ export const protectedProcedure = t.procedure.use(
     const { success } = await ratelimit.limit(user.id);
 
     if (!success) {
-      throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "Easy boy...",
+      });
     }
 
     return opts.next({
