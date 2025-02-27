@@ -6,20 +6,17 @@ import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 export const videosRouter = createTRPCRouter({
   create: protectedProcedure.mutation(async ({ ctx }) => {
     const { userId } = ctx;
+    console.log("before creation");
 
     const upload = await mux.video.uploads.create({
       new_asset_settings: {
         passthrough: userId,
         playback_policy: ["public"],
-        static_renditions: [
-          {
-            resolution: "highest",
-          },
-        ],
+        static_renditions: [{ resolution: "highest" }],
       },
       cors_origin: process.env.NEXT_PUBLIC_APP_URL!,
     });
-
+    console.log("after mux creation");
     const [video] = await db
       .insert(videos)
       .values({
@@ -30,9 +27,6 @@ export const videosRouter = createTRPCRouter({
       })
       .returning();
 
-    return {
-      video,
-      url: upload.url,
-    };
+    return { video, url: upload.url };
   }),
 });
