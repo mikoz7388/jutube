@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DEFAULT_INFINITE_QUERY_LIMIT } from "@/lib/constants";
+import { VideoThumbnail } from "@/modules/videos/ui/components/video-thumbnail";
 import { trpc } from "@/trpc/client";
 import { pages } from "next/dist/build/templates/app-page";
 import Link from "next/link";
@@ -60,7 +61,18 @@ function VideosSectionSuspense() {
                   legacyBehavior
                 >
                   <TableRow className="cursor-pointer">
-                    <TableCell>{video.title}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-4">
+                        <div className="relative aspect-video w-36 shrink-0">
+                          <VideoThumbnail
+                            title={video.title}
+                            imageUrl={video.thumbnailUrl}
+                            previewUrl={video.previewUrl}
+                            duration={video.duration ?? 0}
+                          />
+                        </div>
+                      </div>
+                    </TableCell>
                     <TableCell>visibility</TableCell>
                     <TableCell>status</TableCell>
                     <TableCell>date</TableCell>
