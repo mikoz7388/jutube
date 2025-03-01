@@ -12,7 +12,6 @@ import {
 import { DEFAULT_INFINITE_QUERY_LIMIT } from "@/lib/constants";
 import { VideoThumbnail } from "@/modules/videos/ui/components/video-thumbnail";
 import { trpc } from "@/trpc/client";
-import { pages } from "next/dist/build/templates/app-page";
 import Link from "next/link";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
