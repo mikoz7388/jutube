@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/trpc/client";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import {
   DropdownMenuContent,
@@ -10,7 +10,14 @@ import {
   DropdownMenuTrigger,
   DropdownMenu,
 } from "@/components/ui/dropdown-menu";
-import { MoreVerticalIcon, TrashIcon } from "lucide-react";
+import {
+  CopyCheckIcon,
+  CopyIcon,
+  Globe2Icon,
+  LockIcon,
+  MoreVerticalIcon,
+  TrashIcon,
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,7 +26,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   Form,
   FormControl,
 } from "@/components/ui/form";
@@ -32,6 +38,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { VideoPlayer } from "@/modules/videos/ui/components/video-player";
+import Link from "next/link";
+import { snakeCaseToTitle } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface FormSectionProps {
   videoId: string;
@@ -52,17 +63,69 @@ function FormSectionSkeleton() {
 }
 
 function FormSectionSuspense({ videoId }: FormSectionProps) {
+  const router = useRouter();
+  const { toast } = useToast();
+  const utils = trpc.useUtils();
+
   const [video] = trpc.studio.getOne.useSuspenseQuery({ id: videoId });
   const [categories] = trpc.categories.getMany.useSuspenseQuery();
+
+  const update = trpc.videos.update.useMutation({
+    onSuccess: () => {
+      utils.studio.getMany.invalidate();
+      utils.studio.getOne.invalidate({ id: videoId });
+      toast({
+        title: "Video updated",
+      });
+    },
+    onError: (e) => {
+      toast({
+        title: "Error",
+        description: e.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const remove = trpc.videos.remove.useMutation({
+    onSuccess: (data) => {
+      utils.studio.getMany.invalidate();
+      toast({
+        title: "Video removed",
+        description: `${data.title} has been removed`,
+      });
+      router.push("/studio");
+    },
+    onError: (e) => {
+      toast({
+        title: "Error",
+        description: e.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const form = useForm<z.infer<typeof videoUpdateSchema>>({
     resolver: zodResolver(videoUpdateSchema),
     defaultValues: video,
   });
 
-  const onSubmit = async (data: z.infer<typeof videoUpdateSchema>) => {
-    console.log(data);
+  const onSubmit = (data: z.infer<typeof videoUpdateSchema>) => {
+    update.mutate(data);
   };
+
+  const fullVideoUrl = `${process.env.NEXT_PUBLIC_APP_URL}/videos/${videoId}`;
+  const [isCopied, setIsCopied] = useState(false);
+
+  const onCopy = async () => {
+    await navigator.clipboard.writeText(fullVideoUrl);
+    setIsCopied(true);
+
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000);
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -74,7 +137,7 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
             </p>
           </div>
           <div className="flex items-center gap-x-2">
-            <Button type="submit" disabled={false}>
+            <Button type="submit" disabled={update.isPending}>
               Save
             </Button>
             <DropdownMenu>
@@ -84,7 +147,9 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => remove.mutate({ id: videoId })}
+                >
                   <TrashIcon className="mr-2 size-4" />
                   Delete
                 </DropdownMenuItem>
@@ -147,6 +212,93 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
                           {category.name}
                         </SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="flex flex-col gap-y-8 lg:col-span-2">
+            <div className="flex h-fit flex-col gap-4 overflow-hidden rounded-xl bg-[#F9F9F9]">
+              <div className="relative aspect-video overflow-hidden">
+                <VideoPlayer
+                  playbackId={video.muxPlaybackId}
+                  thumbnailUrl={video.thumbnailUrl}
+                />
+              </div>
+              <div className="flex flex-col gap-y-6 p-4">
+                <div className="flex items-center justify-between gap-x-2">
+                  <div className="flex flex-col gap-y-1">
+                    <p className="text-xs text-muted-foreground">Video link</p>
+                    <div className="flex items-center gap-x-2">
+                      <Link href={`/videos/${video.id}`}>
+                        <p className="line-clamp-1 text-sm text-blue-500">
+                          {fullVideoUrl}
+                        </p>
+                      </Link>
+                      <Button
+                        type="button"
+                        variant={"ghost"}
+                        size="icon"
+                        className="shrink-0"
+                        onClick={onCopy}
+                        disabled={isCopied}
+                      >
+                        {isCopied ? <CopyCheckIcon /> : <CopyIcon />}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-y-1">
+                    <p className="text-xs text-muted-foreground">
+                      Video status
+                    </p>
+                    <p className="text-sm">
+                      {snakeCaseToTitle(video.muxStatus ?? "preparing")}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-y-1">
+                    <p className="text-xs text-muted-foreground">
+                      Subtitles status
+                    </p>
+                    <p className="text-sm">
+                      {snakeCaseToTitle(video.muxTrackStatus ?? "no_subtitles")}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <FormField
+              control={form.control}
+              name="visiblility"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Visibility</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value ?? undefined}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Publish video" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="public">
+                        <div className="flex items-center">
+                          <Globe2Icon className="mr-2 size-4" />
+                          Public
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="private">
+                        <div className="flex items-center">
+                          <LockIcon className="mr-2 size-4" />
+                          Private
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </FormItem>

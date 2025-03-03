@@ -6,8 +6,10 @@ import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ResponsiveModal } from "@/components/responsive-dialog";
 import { StudioUploader } from "./studio-uploader";
+import { useRouter } from "next/navigation";
 
 export function StudioUploadModal() {
+  const router = useRouter();
   const utils = trpc.useUtils();
   const { toast } = useToast();
 
@@ -26,6 +28,13 @@ export function StudioUploadModal() {
     },
   });
 
+  const onSuccess = () => {
+    if (!create.data?.video.id) return;
+
+    create.reset();
+    router.push(`/studio/videos/${create.data.video.id}`);
+  };
+
   return (
     <>
       <ResponsiveModal
@@ -34,7 +43,7 @@ export function StudioUploadModal() {
         onOpenChange={() => create.reset()}
       >
         {create.data?.url ? (
-          <StudioUploader onSuccess={() => {}} endpoint={create.data.url} />
+          <StudioUploader onSuccess={onSuccess} endpoint={create.data.url} />
         ) : (
           <Loader2Icon />
         )}
