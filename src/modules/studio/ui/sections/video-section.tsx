@@ -1,6 +1,7 @@
 "use client";
 
 import { InfiniteScroll } from "@/components/infinite-scroll";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -21,13 +22,50 @@ import { ErrorBoundary } from "react-error-boundary";
 
 export const VideosSection = () => {
   return (
-    <Suspense fallback={<p>Loading ...</p>}>
+    <Suspense fallback={<VideosSectionSkeleton />}>
       <ErrorBoundary fallback={<p>Erorr</p>}>
         <VideosSectionSuspense />
       </ErrorBoundary>
     </Suspense>
   );
 };
+
+function VideosSectionSkeleton() {
+  return (
+    <>
+      <div className="border-y">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[510px] pl-6">Video</TableHead>
+              <TableHead>Visibility</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead className="text-right">Views</TableHead>
+              <TableHead className="text-right">Comments</TableHead>
+              <TableHead className="pr-6 text-right">Likes</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <TableRow key={i}>
+                <TableCell className="pl-6">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-20 w-36" />
+                    <div className="flex flex-col gap-2">
+                      <Skeleton className="h-4 w-[100px]" />
+                      <Skeleton className="h-4 w-[150px]" />
+                    </div>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
+  );
+}
 
 function VideosSectionSuspense() {
   const [videos, query] = trpc.studio.getMany.useSuspenseInfiniteQuery(
@@ -101,9 +139,13 @@ function VideosSectionSuspense() {
                     <TableCell>
                       {format(new Date(video.createdAt), "dd MMM yyyy")}
                     </TableCell>
-                    <TableCell>views</TableCell>
-                    <TableCell>comments</TableCell>
-                    <TableCell>likes</TableCell>
+                    <TableCell className="text-right text-sm">views</TableCell>
+                    <TableCell className="text-right text-sm">
+                      comments
+                    </TableCell>
+                    <TableCell className="pr-6 text-right text-sm">
+                      likes
+                    </TableCell>
                   </TableRow>
                 </Link>
               ))}
