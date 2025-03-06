@@ -37,7 +37,7 @@ export const { POST } = serve(async (context) => {
     const trackUrl = `https://stream.mux.com/${existingVideo.muxPlaybackId}/text/${existingVideo.muxTrackId}.txt`;
 
     const response = await fetch(trackUrl);
-    const text = response.text();
+    const text = await response.text();
 
     if (!text) {
       throw new Error("BAD_REQUEST");
@@ -46,11 +46,10 @@ export const { POST } = serve(async (context) => {
     return text;
   });
 
-  const groq = new Groq();
-
   const GroqDescriptionCompletionResponse = await context.run(
     "get-groq-description-completion",
     async () => {
+      const groq = new Groq();
       return groq.chat.completions.create({
         messages: [
           {

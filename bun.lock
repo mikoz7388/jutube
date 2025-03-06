@@ -5,6 +5,7 @@
       "name": "jutube",
       "dependencies": {
         "@hookform/resolvers": "^3.10.0",
+        "@huggingface/inference": "^3.5.1",
         "@mux/mux-node": "^10.0.0",
         "@mux/mux-player-react": "^3.3.0",
         "@mux/mux-uploader-react": "^1.1.2",
@@ -199,6 +200,10 @@
     "@hexagon/base64": ["@hexagon/base64@1.1.28", "", {}, "sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw=="],
 
     "@hookform/resolvers": ["@hookform/resolvers@3.10.0", "", { "peerDependencies": { "react-hook-form": "^7.0.0" } }, "sha512-79Dv+3mDF7i+2ajj7SkypSKHhl1cbln1OGavqrsF7p6mbUv11xpqpacPsGDCTRvCSjEEIez2ef1NveSVL3b0Ag=="],
+
+    "@huggingface/inference": ["@huggingface/inference@3.5.1", "", { "dependencies": { "@huggingface/tasks": "^0.17.0" } }, "sha512-NwTj5MS1eb4HfSp/O1/PyH1bEhTXl/iFh/K+8yYkUTHtK4AHXi/NDsV2LblhACaTEIhpOpYswL9cZx7z3y1tlg=="],
+
+    "@huggingface/tasks": ["@huggingface/tasks@0.17.1", "", {}, "sha512-kN5F/pzwxtmdZ0jORumNyegNKOX/ciU5G/DMZcqK3SJShod4C6yfvBRCMn5sEDzanxtU8VjX+7TaInQFmmU8Nw=="],
 
     "@humanfs/core": ["@humanfs/core@0.19.1", "", {}, "sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA=="],
 
