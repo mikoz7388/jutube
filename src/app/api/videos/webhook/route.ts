@@ -68,35 +68,48 @@ export const POST = async (request: Request) => {
       if (!data.upload_id) {
         return new Response("No upload ID found", { status: 400 });
       }
-
       const tempThumbnailUrl = `https://image.mux.com/${playbackId}/thumbnail.jpg`;
       const tempPreviewUrl = `https://image.mux.com/${playbackId}/animated.gif`;
       const duration = data.duration ? Math.round(data.duration * 1000) : 0;
 
-      const utapi = new UTApi();
-      const [uploadedThumbnailUrl, uploadedPreviewUrl] =
-        await utapi.uploadFilesFromUrl([tempThumbnailUrl, tempPreviewUrl]);
+      const [existingVideo] = await db
+        .select({
+          thumbnailKey: videos.thumbnailKey,
+          thumbnailUrl: videos.thumbnailUrl,
+          previewUrl: videos.previewUrl,
+          previewKey: videos.previewKey,
+        })
+        .from(videos)
+        .where(eq(videos.muxUploadId, data.upload_id));
 
-      if (!uploadedThumbnailUrl.data || !uploadedPreviewUrl.data) {
-        return new Response("Failed to upload thumbnail or preview", {
-          status: 500,
-        });
+      if (!existingVideo.thumbnailKey || !existingVideo.previewKey) {
+        const utapi = new UTApi();
+        const [uploadedThumbnailUrl, uploadedPreviewUrl] =
+          await utapi.uploadFilesFromUrl([tempThumbnailUrl, tempPreviewUrl]);
+
+        if (!uploadedThumbnailUrl.data || !uploadedPreviewUrl.data) {
+          return new Response("Failed to upload thumbnail or preview", {
+            status: 500,
+          });
+        }
+
+        existingVideo.previewKey = uploadedPreviewUrl.data.key;
+        existingVideo.previewUrl = uploadedPreviewUrl.data.ufsUrl;
+
+        existingVideo.thumbnailKey = uploadedThumbnailUrl.data.key;
+        existingVideo.thumbnailUrl = uploadedThumbnailUrl.data.ufsUrl;
       }
-
-      const { key: thumbnailKey, ufsUrl: thumbnailUrl } =
-        uploadedThumbnailUrl.data;
-      const { key: previewKey, ufsUrl: previewUrl } = uploadedPreviewUrl.data;
-
+      //TODO i do not like this
       await db
         .update(videos)
         .set({
           muxStatus: data.status,
           muxPlaybackId: playbackId,
           muxAssetId: data.id,
-          thumbnailUrl,
-          thumbnailKey,
-          previewUrl,
-          previewKey,
+          thumbnailUrl: existingVideo.thumbnailUrl,
+          thumbnailKey: existingVideo.thumbnailKey,
+          previewUrl: existingVideo.previewUrl,
+          previewKey: existingVideo.previewKey,
           duration,
         })
         .where(eq(videos.muxUploadId, data.upload_id));

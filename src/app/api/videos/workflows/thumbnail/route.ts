@@ -71,6 +71,23 @@ export const { POST } = serve(async (context) => {
       if (!upload?.data) {
         throw new Error("THUMBNAIL_UPLOAD_FAILED");
       }
+
+      if (existingVideo.thumbnailKey) {
+        await utapi.deleteFiles(existingVideo.thumbnailKey);
+        await db
+          .update(videos)
+          .set({
+            thumbnailKey: null,
+            thumbnailUrl: null,
+          })
+          .where(
+            and(
+              eq(videos.id, input.videoId),
+              eq(videos.userId, existingVideo.id),
+            ),
+          );
+      }
+
       return {
         key: upload.data.key,
         url: upload.data.url,
