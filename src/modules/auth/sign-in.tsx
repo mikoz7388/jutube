@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -131,6 +132,15 @@ export default function SignIn({ redirectTo }: { redirectTo: string }) {
             </Button>
           </div>
         </div>
+        <CardFooter className="mt-4 text-center text-sm">
+          Don't have an account?{" "}
+          <Link
+            href="/sign-up"
+            className="ml-2 font-medium text-primary underline underline-offset-4 hover:opacity-80"
+          >
+            Sign up
+          </Link>
+        </CardFooter>
       </CardContent>
     </Card>
   );

@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -16,6 +17,7 @@ import { Loader2, X } from "lucide-react";
 import { signUp } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 export function SignUp() {
   const [firstName, setFirstName] = useState("");
@@ -196,6 +198,15 @@ export function SignUp() {
           </Button>
         </form>
       </CardContent>
+      <CardFooter className="mt-4 text-center text-sm">
+        Have an account already?{" "}
+        <Link
+          href="/sign-in"
+          className="ml-2 font-medium text-primary underline underline-offset-4 hover:opacity-80"
+        >
+          Sign in
+        </Link>
+      </CardFooter>
     </Card>
   );
 }
