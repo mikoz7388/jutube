@@ -50,6 +50,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { TUMBNAIL_FALLBACK } from "@/modules/videos/constatns";
 import { ThumbnailUploadModal } from "./thumbnail-upload-modal";
+import { ThumbnailGenerateModal } from "./thumbnail-generate-modal";
 
 interface FormSectionProps {
   videoId: string;
@@ -75,7 +76,10 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
   const utils = trpc.useUtils();
 
   const [isCopied, setIsCopied] = useState(false);
-  const [thumbnailUploadModalOpen, setThumbnailModalOpen] = useState(false);
+  const [thumbnailUploadModalOpen, setThumbnailUploadModalOpen] =
+    useState(false);
+  const [thumbnailGenerateModalOpen, setThumbnailGenerateModalOpen] =
+    useState(false);
 
   const [video] = trpc.studio.getOne.useSuspenseQuery({ id: videoId });
   const [categories] = trpc.categories.getMany.useSuspenseQuery();
@@ -121,22 +125,6 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
       utils.studio.getOne.invalidate({ id: videoId });
       toast({
         title: "Thumbnail restored",
-      });
-    },
-    onError: (e) => {
-      toast({
-        title: "Error",
-        description: e.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const generateThumbnail = trpc.videos.generateThumbnail.useMutation({
-    onSuccess: () => {
-      toast({
-        title: "Thumbnail generation started",
-        description: "This may take some time",
       });
     },
     onError: (e) => {
@@ -204,7 +192,12 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
     <>
       <ThumbnailUploadModal
         open={thumbnailUploadModalOpen}
-        onOpenChange={setThumbnailModalOpen}
+        onOpenChange={setThumbnailUploadModalOpen}
+        videoId={videoId}
+      />
+      <ThumbnailGenerateModal
+        open={thumbnailGenerateModalOpen}
+        onOpenChange={setThumbnailGenerateModalOpen}
         videoId={videoId}
       />
       <Form {...form}>
@@ -341,14 +334,14 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="start" side="right">
                             <DropdownMenuItem
-                              onClick={() => setThumbnailModalOpen(true)}
+                              onClick={() => setThumbnailUploadModalOpen(true)}
                             >
                               <ImagePlusIcon className="mr-1 size-4" />
                               Change
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() =>
-                                generateThumbnail.mutate({ id: videoId })
+                                setThumbnailGenerateModalOpen(true)
                               }
                             >
                               <SparklesIcon className="mr-1 size-4" />

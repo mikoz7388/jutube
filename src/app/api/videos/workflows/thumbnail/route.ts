@@ -2,17 +2,18 @@ import { db } from "@/db";
 import { videos } from "@/db/schema/videos";
 import { serve } from "@upstash/workflow/nextjs";
 import { and, eq } from "drizzle-orm";
+import { UTApi, UTFile } from "uploadthing/server";
 import { HfInference } from "@huggingface/inference";
-import { UTApi } from "uploadthing/server";
 
 interface InputType {
   userId: string;
   videoId: string;
+  prompt: string;
 }
 
-export const { POST } = serve(async (context) => {
-  const input = context.requestPayload as InputType;
-  const { videoId, userId } = input;
+export const { POST } = serve<InputType>(async (context) => {
+  const input = context.requestPayload;
+  const { videoId, userId, prompt } = input;
 
   const existingVideo = await context.run("get-video", async () => {
     const data = await db
@@ -27,24 +28,12 @@ export const { POST } = serve(async (context) => {
     return data[0];
   });
 
-  const transcript = await context.run("get-transcript", async () => {
-    const trackUrl = `https://stream.mux.com/${existingVideo.muxPlaybackId}/text/${existingVideo.muxTrackId}.txt`;
+  const newThmbnail = await context.run("generate-thumbnail", async () => {
+    console.log("Starting thumbnail generation with HF");
 
-    const response = await fetch(trackUrl);
-    const text = await response.text();
-
-    if (!text) {
-      throw new Error("BAD_REQUEST");
-    }
-
-    return text;
-  });
-
-  const generatedThumbnail = await context.run(
-    "generate-thumbnail",
-    async () => {
+    try {
       const hf = new HfInference(process.env.HUGGINGFACE_TOKEN);
-      const prompt = `High quality YouTube thumbnail for a video about: ${transcript.slice(0, 500)}`;
+      console.log("HF client initialized");
 
       const response = await hf.textToImage({
         model: "stabilityai/stable-diffusion-xl-base-1.0",
@@ -55,52 +44,46 @@ export const { POST } = serve(async (context) => {
         },
       });
 
-      const imageBuffer = await response.arrayBuffer();
+      console.log("Image generated successfully", { response });
+
       const utapi = new UTApi();
 
-      const file = new File(
-        [Buffer.from(imageBuffer)],
-        `thumbnail-${videoId}.png`,
-        {
-          type: "image/png",
-        },
-      );
-
-      const upload = await utapi.uploadFiles(file);
-
-      if (!upload?.data) {
-        throw new Error("THUMBNAIL_UPLOAD_FAILED");
-      }
-
-      if (existingVideo.thumbnailKey) {
-        await utapi.deleteFiles(existingVideo.thumbnailKey);
-        await db
-          .update(videos)
-          .set({
-            thumbnailKey: null,
-            thumbnailUrl: null,
-          })
-          .where(
-            and(
-              eq(videos.id, input.videoId),
-              eq(videos.userId, existingVideo.id),
-            ),
-          );
-      }
+      const upload = await utapi.uploadFiles(new File([response], "text.jpeg"));
+      console.log(upload.error, upload.data?.size);
 
       return {
-        key: upload.data.key,
-        url: upload.data.ufsUrl,
+        key: upload.data?.key ?? null,
+        url: upload.data?.ufsUrl ?? null,
       };
-    },
-  );
+    } catch (error) {
+      console.error("Error generating thumbnail:", error);
+      throw error;
+    }
+  });
+
+  const savedImage = await context.run("delete-prev-thumbnail", async () => {
+    const utapi = new UTApi();
+
+    if (existingVideo.thumbnailKey) {
+      await utapi.deleteFiles(existingVideo.thumbnailKey);
+      await db
+        .update(videos)
+        .set({
+          thumbnailKey: null,
+          thumbnailUrl: null,
+        })
+        .where(
+          and(eq(videos.id, input.videoId), eq(videos.userId, input.userId)),
+        );
+    }
+  });
 
   await context.run("update-video", async () => {
     await db
       .update(videos)
       .set({
-        thumbnailKey: generatedThumbnail.key,
-        thumbnailUrl: generatedThumbnail.url,
+        thumbnailKey: newThmbnail.key,
+        thumbnailUrl: newThmbnail.url,
       })
       .where(
         and(
@@ -110,5 +93,5 @@ export const { POST } = serve(async (context) => {
       );
   });
 
-  return { success: true, thumbnailUrl: generatedThumbnail.url };
+  return { success: true, thumbnailUrl: newThmbnail.url };
 });
