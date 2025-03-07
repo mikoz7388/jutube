@@ -90,7 +90,7 @@ export const { POST } = serve(async (context) => {
 
       return {
         key: upload.data.key,
-        url: upload.data.url,
+        url: upload.data.ufsUrl,
       };
     },
   );
