@@ -11,6 +11,7 @@ import Link from "next/link";
 
 export function StudioSidebarHeader() {
   const user = useSession().data?.user;
+  console.log("user", user?.name);
   const { state } = useSidebar();
 
   if (!user)
