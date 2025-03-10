@@ -12,11 +12,12 @@ import {
   protectedProcedure,
 } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { and, eq, getTableColumns, inArray } from "drizzle-orm";
+import { and, eq, getTableColumns, inArray, isNotNull } from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
 import { z } from "zod";
 import { workflow } from "@/lib/qstash";
 import { users } from "@/db/schema/auth";
+import { subscriptions } from "@/db/schema/subscriptions";
 
 export const videosRouter = createTRPCRouter({
   getOne: baseProcedure
@@ -34,12 +35,26 @@ export const videosRouter = createTRPCRouter({
           .where(inArray(videoReactions.userId, userId ? [userId] : [])),
       );
 
+      const viewerSubscriptions = db.$with("viewer_subscriptions").as(
+        db
+          .select()
+          .from(subscriptions)
+          .where(inArray(subscriptions.viewerId, userId ? [userId] : [])),
+      );
+
       const [existingVideo] = await db
-        .with(viewerReactions)
+        .with(viewerReactions, viewerSubscriptions)
         .select({
           ...getTableColumns(videos),
           user: {
             ...getTableColumns(users),
+            subscriberCount: db.$count(
+              subscriptions,
+              eq(subscriptions.creatorId, users.id),
+            ),
+            viewerSubscribed: isNotNull(viewerSubscriptions.viewerId).mapWith(
+              Boolean,
+            ),
           },
           viewsCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
           likeCount: db.$count(
@@ -62,8 +77,17 @@ export const videosRouter = createTRPCRouter({
         .from(videos)
         .innerJoin(users, eq(videos.userId, users.id))
         .leftJoin(viewerReactions, eq(viewerReactions.videoId, videos.id))
+        .leftJoin(
+          viewerSubscriptions,
+          eq(viewerSubscriptions.creatorId, users.id),
+        )
         .where(eq(videos.id, input.id))
-        .groupBy(videos.id, users.id, viewerReactions.type);
+        .groupBy(
+          videos.id,
+          users.id,
+          viewerReactions.type,
+          viewerSubscriptions.viewerId,
+        );
 
       if (!existingVideo) {
         throw new TRPCError({ code: "NOT_FOUND" });
