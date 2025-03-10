@@ -55,7 +55,7 @@ const VideosSectionSuspense = ({ videoId }: VideosSectionProps) => {
           thumbnailUrl={video.thumbnailUrl}
         />
       </div>
-      <VideoBanner status={"waiting"} />
+      <VideoBanner status={video.muxStatus} />
       <VideoTopRow video={video} />
     </>
   );
