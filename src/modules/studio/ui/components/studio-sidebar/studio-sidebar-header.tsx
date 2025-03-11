@@ -30,11 +30,7 @@ export function StudioSidebarHeader() {
       <SidebarMenuItem>
         <SidebarMenuButton asChild tooltip="Your profile">
           <Link href="/users/current">
-            <UserAvatar
-              imageUrl={user.image ?? undefined}
-              name={user.name}
-              size="xs"
-            />
+            <UserAvatar imageUrl={user.image} name={user.name} size="xs" />
             <span className="text-sm">Your profile</span>
           </Link>
         </SidebarMenuButton>
@@ -45,7 +41,7 @@ export function StudioSidebarHeader() {
     <SidebarHeader className="flex items-center justify-center pb-4">
       <Link href="/users/current">
         <UserAvatar
-          imageUrl={user.image ?? undefined}
+          imageUrl={user.image}
           name={user.name}
           className="size-[112px] transition-opacity hover:opacity-80"
         />

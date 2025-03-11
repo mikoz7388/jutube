@@ -18,7 +18,7 @@ const avatarVariants = cva("", {
 });
 
 interface UserAvatarProps extends VariantProps<typeof avatarVariants> {
-  imageUrl?: string;
+  imageUrl?: string | null;
   name: string;
   className?: string;
   onClick?: () => void;
@@ -36,13 +36,9 @@ export function UserAvatar({
       className={cn(avatarVariants({ size, className }))}
       onClick={onClick}
     >
-      <AvatarImage src={imageUrl} alt={name} />
+      <AvatarImage src={imageUrl ?? undefined} alt={name} />
       <AvatarFallback>
-        {name
-          .toUpperCase()
-          .split(" ")
-          .map((w) => w.at(0))
-          .join("")}
+        <AvatarImage src="/user-placeholder.svg" />
       </AvatarFallback>
     </Avatar>
   );
