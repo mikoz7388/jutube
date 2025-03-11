@@ -7,6 +7,10 @@ interface VideoPlayerProps {
   onPlay?: () => void;
 }
 
+export function VideoPlayerSkeleton() {
+  return <div className="aspect-video rounded-xl bg-black"></div>;
+}
+
 export function VideoPlayer({
   autoplay,
   onPlay,
