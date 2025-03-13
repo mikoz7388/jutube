@@ -20,7 +20,11 @@ interface VideoMenuProps {
   onRemove?: () => void;
 }
 
-export function VideoMenu({ videoId, onRemove, variant }: VideoMenuProps) {
+export function VideoMenu({
+  videoId,
+  onRemove,
+  variant = "ghost",
+}: VideoMenuProps) {
   const onShare = () => {
     const fullVideoUrl = `${process.env.NEXT_PUBLIC_APP_URL}/videos/${videoId}`;
     navigator.clipboard.writeText(fullVideoUrl);

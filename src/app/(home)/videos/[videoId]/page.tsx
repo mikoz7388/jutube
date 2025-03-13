@@ -8,7 +8,14 @@ interface PageProps {
 export default async function Page({ params }: PageProps) {
   const { videoId } = await params;
   void trpc.videos.getOne.prefetch({ id: videoId });
-  void trpc.comments.getMany.prefetchInfinite({ videoId, limit: DEFAULT_INFINITE_QUERY_LIMIT });
+  void trpc.comments.getMany.prefetchInfinite({
+    videoId,
+    limit: DEFAULT_INFINITE_QUERY_LIMIT,
+  });
+  void trpc.suggestions.getMany.prefetchInfinite({
+    videoId,
+    limit: DEFAULT_INFINITE_QUERY_LIMIT,
+  });
 
   return (
     <HydrateClient>
