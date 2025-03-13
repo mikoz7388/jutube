@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { VideoMenu } from "./video-menu";
+import { useMemo } from "react";
 
 const videoRowCardVariants = cva("group flex min-w-0", {
   variants: {
@@ -49,6 +50,18 @@ export function VideoRowCard({
   size = "default",
   onRemove,
 }: VideoRowCardProps) {
+  const compactViews = useMemo(() => {
+    return Intl.NumberFormat("en", {
+      notation: "compact",
+    }).format(data.viewCount);
+  }, [data.viewCount]);
+
+  const compactLikes = useMemo(() => {
+    return Intl.NumberFormat("en", {
+      notation: "compact",
+    }).format(data.likeCount);
+  }, [data.likeCount]);
+
   return (
     <div className={videoRowCardVariants({ size })}>
       <Link href={`/videos/${data.id}`} className={thumbnailVariants({ size })}>
@@ -72,7 +85,7 @@ export function VideoRowCard({
             </h3>
             {size === "default" && (
               <p className="mt-1 text-xs text-muted-foreground">
-                {data.viewCount} views • {data.likeCount} likes
+                {compactViews} views • {compactLikes} likes
               </p>
             )}
             {size === "default" && (
@@ -105,7 +118,7 @@ export function VideoRowCard({
               <>
                 <UserInfo size="sm" name={data.user.name} />
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {data.viewCount} views • {data.likeCount} likes
+                  {compactViews} views • {compactLikes} likes
                 </p>
               </>
             )}
