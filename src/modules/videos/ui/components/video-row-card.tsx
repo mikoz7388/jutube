@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { VideoGetManyOutput } from "../../types";
 import Link from "next/link";
-import { VideoThumbnail } from "./video-thumbnail";
+import { VideoThumbnail, VideoThumbnailSkeleton } from "./video-thumbnail";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/user-avatar";
 import { UserInfo } from "@/modules/users/ui/components/user-info";
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/tooltip";
 import { VideoMenu } from "./video-menu";
 import { useMemo } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const videoRowCardVariants = cva("group flex min-w-0", {
   variants: {
@@ -41,8 +42,35 @@ interface VideoRowCardProps extends VariantProps<typeof videoRowCardVariants> {
   onRemove?: () => void;
 }
 
-export function VideoRowCardSkeleton({}: VideoRowCardProps) {
-  return <div>Skeleton</div>;
+export function VideoRowCardSkeleton({
+  size,
+}: VariantProps<typeof videoRowCardVariants>) {
+  return (
+    <div className={videoRowCardVariants({ size })}>
+      <div className={thumbnailVariants({ size })}>
+        <VideoThumbnailSkeleton />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex justify-between gap-x-2">
+          <div className="min-w-0 flex-1">
+            <Skeleton
+              className={cn("h-5 w-[40%]", size === "compact" && "h-4")}
+            />
+            {size === "default" && (
+              <>
+                <Skeleton className="mt-1 h-4 w-1/5" />
+                <div className="my-3 flex items-center gap-2">
+                  <Skeleton className="size-8 rounded-full" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              </>
+            )}
+            {size === "compact" && <Skeleton className="mt-1 h-4 w-1/2" />}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function VideoRowCard({

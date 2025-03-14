@@ -1,12 +1,21 @@
 import { formatDuration } from "@/lib/utils";
 import Image from "next/image";
 import { TUMBNAIL_FALLBACK } from "../../constatns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface VideoThumbnailProps {
   title: string;
   imageUrl?: string | null;
   previewUrl?: string | null;
   duration: number;
+}
+
+export function VideoThumbnailSkeleton() {
+  return (
+    <div className="relative aspect-video w-full overflow-hidden rounded-xl">
+      <Skeleton className="size-full" />
+    </div>
+  );
 }
 
 export function VideoThumbnail({
