@@ -118,6 +118,23 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
       });
     },
   });
+  const revalidate = trpc.videos.revlidate.useMutation({
+    onSuccess: () => {
+      utils.studio.getMany.invalidate();
+      utils.studio.getOne.invalidate({ id: videoId });
+
+      toast({
+        title: "Video revalidated",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
+    },
+  });
 
   const restoreThumbnail = trpc.videos.restoreThumbnail.useMutation({
     onSuccess: () => {
@@ -225,6 +242,12 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
                   >
                     <TrashIcon className="mr-2 size-4" />
                     Delete
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => revalidate.mutate({ id: videoId })}
+                  >
+                    <RotateCcwIcon className="mr-2 size-4" />
+                    Revalidate
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
