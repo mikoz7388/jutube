@@ -51,6 +51,7 @@ import Image from "next/image";
 import { TUMBNAIL_FALLBACK } from "@/modules/videos/constatns";
 import { ThumbnailUploadModal } from "./thumbnail-upload-modal";
 import { ThumbnailGenerateModal } from "./thumbnail-generate-modal";
+import { APP_URL } from "@/lib/constants";
 
 interface FormSectionProps {
   videoId: string;
@@ -194,7 +195,7 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
     update.mutate(data);
   };
 
-  const fullVideoUrl = `${process.env.NEXT_PUBLIC_APP_URL}/videos/${videoId}`;
+  const fullVideoUrl = `${APP_URL}/videos/${videoId}`;
 
   const onCopy = async () => {
     await navigator.clipboard.writeText(fullVideoUrl);

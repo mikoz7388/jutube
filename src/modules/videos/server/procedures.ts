@@ -18,6 +18,7 @@ import { z } from "zod";
 import { workflow } from "@/lib/qstash";
 import { users } from "@/db/schema/auth";
 import { subscriptions } from "@/db/schema/subscriptions";
+import { APP_URL } from "@/lib/constants";
 
 export const videosRouter = createTRPCRouter({
   getOne: baseProcedure
@@ -292,7 +293,7 @@ export const videosRouter = createTRPCRouter({
         ],
         static_renditions: [{ resolution: "highest" }],
       },
-      cors_origin: process.env.NEXT_PUBLIC_APP_URL!,
+      cors_origin: APP_URL!,
     });
     const [video] = await db
       .insert(videos)

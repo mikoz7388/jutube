@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { APP_URL } from "@/lib/constants";
 import { SearchIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -13,7 +14,7 @@ export function SearchInput() {
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const url = new URL("/search", process.env.NEXT_PUBLIC_APP_URL);
+    const url = new URL("/search", APP_URL);
     const newQuery = value.trim();
 
     if (newQuery !== "") {

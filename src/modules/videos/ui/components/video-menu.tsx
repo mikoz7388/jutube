@@ -13,6 +13,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { APP_URL } from "@/lib/constants";
 
 interface VideoMenuProps {
   videoId: string;
@@ -26,7 +27,7 @@ export function VideoMenu({
   variant = "ghost",
 }: VideoMenuProps) {
   const onShare = () => {
-    const fullVideoUrl = `${process.env.NEXT_PUBLIC_APP_URL}/videos/${videoId}`;
+    const fullVideoUrl = `${APP_URL}/videos/${videoId}`;
     navigator.clipboard.writeText(fullVideoUrl);
     toast({
       title: "Link copied to the clipboard",
