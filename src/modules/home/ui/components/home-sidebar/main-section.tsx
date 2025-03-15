@@ -13,9 +13,9 @@ import Link from "next/link";
 const items = [
   { title: "Home", icon: HomeIcon, url: "/" },
   {
-    title: "Subscriptions",
+    title: "Subscribed",
     icon: PlaySquareIcon,
-    url: "/feed/subscriptions",
+    url: "/feed/subscribed",
     auth: true,
   },
   { title: "Trending", icon: FlameIcon, url: "/feed/trending" },
