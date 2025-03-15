@@ -12,7 +12,17 @@ import {
   protectedProcedure,
 } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { and, eq, getTableColumns, inArray, isNotNull, sql } from "drizzle-orm";
+import {
+  and,
+  desc,
+  eq,
+  getTableColumns,
+  inArray,
+  isNotNull,
+  lt,
+  or,
+  sql,
+} from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
 import { z } from "zod";
 import { workflow } from "@/lib/qstash";
@@ -94,6 +104,154 @@ export const videosRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
       return existingVideo;
+    }),
+  getMany: baseProcedure
+    .input(
+      z.object({
+        categoryId: z.string().uuid().nullish(),
+        cursor: z
+          .object({
+            id: z.string().uuid(),
+            updatedAt: z.date(),
+          })
+          .nullish(),
+        limit: z.number().min(1).max(100),
+      }),
+    )
+    .query(async ({ input }) => {
+      const { cursor, limit, categoryId } = input;
+
+      const data = await db
+        .select({
+          ...getTableColumns(videos),
+          user: users,
+          viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
+          likeCount: db.$count(
+            videoReactions,
+            and(
+              eq(videoReactions.videoId, videos.id),
+              eq(videoReactions.type, "like"),
+            ),
+          ),
+          dislikeCount: db.$count(
+            videoReactions,
+            and(
+              eq(videoReactions.videoId, videos.id),
+              eq(videoReactions.type, "dislike"),
+            ),
+          ),
+        })
+        .from(videos)
+        .innerJoin(users, eq(users.id, videos.userId))
+        .where(
+          and(
+            eq(videos.visiblility, "public"),
+            categoryId ? eq(videos.categoryId, categoryId) : undefined,
+            cursor
+              ? or(
+                  lt(videos.updatedAt, cursor.updatedAt),
+                  and(
+                    eq(videos.updatedAt, cursor.updatedAt),
+                    lt(videos.id, cursor.id),
+                  ),
+                )
+              : undefined,
+          ),
+        )
+        .orderBy(desc(videos.updatedAt), desc(videos.id))
+        .limit(limit + 1); // One more for hasMore check
+
+      const hasMore = data.length > limit;
+      if (hasMore) {
+        data.pop();
+      }
+
+      const lastItem = data[data.length - 1];
+
+      const nextCursor = hasMore
+        ? {
+            id: lastItem.id,
+            updatedAt: lastItem.updatedAt,
+          }
+        : null;
+
+      return { data, nextCursor };
+    }),
+  getTrending: baseProcedure
+    .input(
+      z.object({
+        cursor: z
+          .object({
+            id: z.string().uuid(),
+            viewCount: z.number(),
+          })
+          .nullish(),
+        limit: z.number().min(1).max(100),
+      }),
+    )
+    .query(async ({ input }) => {
+      const { cursor, limit } = input;
+
+      const viewCountSubQuery = db.$count(
+        videoViews,
+        eq(videoViews.videoId, videos.id),
+      );
+
+      const data = await db
+        .select({
+          ...getTableColumns(videos),
+          user: users,
+          viewCount: viewCountSubQuery,
+          likeCount: db.$count(
+            videoReactions,
+            and(
+              eq(videoReactions.videoId, videos.id),
+              eq(videoReactions.type, "like"),
+            ),
+          ),
+          dislikeCount: db.$count(
+            videoReactions,
+            and(
+              eq(videoReactions.videoId, videos.id),
+              eq(videoReactions.type, "dislike"),
+            ),
+          ),
+        })
+        .from(videos)
+        .innerJoin(users, eq(users.id, videos.userId))
+        .where(
+          and(
+            eq(videos.visiblility, "public"),
+
+            cursor
+              ? or(
+                  lt(viewCountSubQuery, cursor.viewCount),
+                  and(
+                    eq(viewCountSubQuery, cursor.viewCount),
+                    lt(videos.id, cursor.id),
+                  ),
+                )
+              : undefined,
+          ),
+        )
+        .orderBy(desc(viewCountSubQuery), desc(videos.id))
+        .limit(limit + 1); // One more for hasMore check
+
+      const hasMore = data.length > limit;
+      if (hasMore) {
+        data.pop();
+      }
+
+      const lastItem = data[data.length - 1];
+
+      const nextCursor = hasMore
+        ? {
+            id: lastItem.id,
+            viewCount: lastItem.viewCount,
+          }
+        : null;
+
+      return { data, nextCursor };
     }),
   generateThumbnail: protectedProcedure
     .input(z.object({ id: z.string().uuid(), prompt: z.string().min(10) }))
