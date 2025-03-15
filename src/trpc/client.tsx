@@ -23,7 +23,7 @@ function getQueryClient() {
 function getUrl() {
   const base = (() => {
     if (typeof window !== "undefined") return "";
-    return APP_URL;
+    return APP_URL ? APP_URL : "http://localhost:3000";
   })();
   return `${base}/api/trpc`;
 }
