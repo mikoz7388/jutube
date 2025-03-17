@@ -7,13 +7,14 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { users } from "./auth";
-import { reactionType, videos } from "./videos";
+import { videos } from "./videos";
 import {
   createInsertSchema,
   createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod";
 import { relations } from "drizzle-orm";
+import { reactionType } from "./enums";
 
 export const comments = pgTable(
   "comments",

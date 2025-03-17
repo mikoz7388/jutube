@@ -1,6 +1,5 @@
 import {
   integer,
-  pgEnum,
   pgTable,
   primaryKey,
   text,
@@ -16,11 +15,7 @@ import {
   createUpdateSchema,
 } from "drizzle-zod";
 import { relations } from "drizzle-orm";
-
-export const videoVisibility = pgEnum("video_visibility", [
-  "private",
-  "public",
-]);
+import { reactionType, videoVisibility } from "./enums";
 
 export const videos = pgTable("videos", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -91,8 +86,6 @@ export const videoViewRelations = relations(videoViews, ({ one }) => ({
 export const videoViewsInsertSchema = createInsertSchema(videoViews);
 export const videoViewsUpdateSchema = createUpdateSchema(videoViews);
 export const videoViewsSelectSchema = createSelectSchema(videoViews);
-
-export const reactionType = pgEnum("reaction_type", ["like", "dislike"]);
 
 export const videoReactions = pgTable(
   "video_reactions",
