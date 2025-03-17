@@ -48,7 +48,10 @@ export const studioRouter = createTRPCRouter({
             cursor
               ? or(
                   lt(videos.updatedAt, cursor.updatedAt),
-                  and(eq(videos.updatedAt, cursor.updatedAt), lt(videos.id, cursor.id)),
+                  and(
+                    eq(videos.updatedAt, cursor.updatedAt),
+                    lt(videos.id, cursor.id),
+                  ),
                 )
               : undefined,
           ),

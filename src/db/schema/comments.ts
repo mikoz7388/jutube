@@ -13,6 +13,7 @@ import {
   createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod";
+import { relations } from "drizzle-orm";
 
 export const comments = pgTable(
   "comments",
@@ -40,6 +41,11 @@ export const comments = pgTable(
   ],
 );
 
+export const commentsRelations = relations(comments, ({ one }) => ({
+  video: one(videos, { fields: [comments.videoId], references: [videos.id] }),
+  user: one(users, { fields: [comments.userId], references: [users.id] }),
+}));
+
 export const commentInsertSchema = createInsertSchema(comments);
 export const commentUpdateSchema = createUpdateSchema(comments);
 export const commentSelectSchema = createSelectSchema(comments);
@@ -63,4 +69,18 @@ export const commentReactions = pgTable(
       columns: [t.userId, t.commentId],
     }),
   ],
+);
+
+export const commentReactionsRelations = relations(
+  commentReactions,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [commentReactions.userId],
+      references: [users.id],
+    }),
+    comment: one(comments, {
+      fields: [commentReactions.commentId],
+      references: [comments.id],
+    }),
+  }),
 );

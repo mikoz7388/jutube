@@ -1,4 +1,9 @@
+import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, boolean, uuid } from "drizzle-orm/pg-core";
+import { videoReactions, videos, videoViews } from "./videos";
+import { subscriptions } from "./subscriptions";
+import { commentReactions, comments } from "./comments";
+import { playlists } from "./playlists";
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -9,6 +14,21 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 });
+
+export const userRelations = relations(users, ({ many }) => ({
+  videos: many(videos),
+  videoViews: many(videoViews),
+  videoReactions: many(videoReactions),
+  subscriptions: many(subscriptions, {
+    relationName: "subscriptions_viewer_id_fk",
+  }),
+  subscribers: many(subscriptions, {
+    relationName: "subscriptions_creator_id_fk",
+  }),
+  comments: many(comments),
+  commentReactions: many(commentReactions),
+  playlists: many(playlists),
+}));
 
 export const sessions = pgTable("sessions", {
   id: uuid("id").primaryKey().defaultRandom(),

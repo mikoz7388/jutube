@@ -15,6 +15,7 @@ import {
   createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod";
+import { relations } from "drizzle-orm";
 
 export const videoVisibility = pgEnum("video_visibility", [
   "private",
@@ -49,6 +50,15 @@ export const videos = pgTable("videos", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const videoRelations = relations(videos, ({ one, many }) => ({
+  user: one(users, { fields: [videos.userId], references: [users.id] }),
+  category: one(categories, {
+    fields: [videos.categoryId],
+    references: [categories.id],
+  }),
+  views: many(videoViews),
+}));
+
 export const videoInsertSchema = createInsertSchema(videos);
 export const videoUpdateSchema = createUpdateSchema(videos);
 export const videoSelectSchema = createSelectSchema(videos);
@@ -72,6 +82,11 @@ export const videoViews = pgTable(
     }),
   ],
 );
+
+export const videoViewRelations = relations(videoViews, ({ one }) => ({
+  user: one(users, { fields: [videoViews.userId], references: [users.id] }),
+  video: one(videos, { fields: [videoViews.videoId], references: [videos.id] }),
+}));
 
 export const videoViewsInsertSchema = createInsertSchema(videoViews);
 export const videoViewsUpdateSchema = createUpdateSchema(videoViews);
@@ -99,6 +114,14 @@ export const videoReactions = pgTable(
     }),
   ],
 );
+
+export const videoReactionsRelations = relations(videoReactions, ({ one }) => ({
+  user: one(users, { fields: [videoReactions.userId], references: [users.id] }),
+  video: one(videos, {
+    fields: [videoReactions.videoId],
+    references: [videos.id],
+  }),
+}));
 
 export const videoReactionsInsertSchema = createInsertSchema(videoReactions);
 export const videoReactionsUpdateSchema = createUpdateSchema(videoReactions);
