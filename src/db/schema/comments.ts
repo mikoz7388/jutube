@@ -42,9 +42,16 @@ export const comments = pgTable(
   ],
 );
 
-export const commentsRelations = relations(comments, ({ one }) => ({
+export const commentsRelations = relations(comments, ({ one, many }) => ({
   video: one(videos, { fields: [comments.videoId], references: [videos.id] }),
   user: one(users, { fields: [comments.userId], references: [users.id] }),
+  reactions: many(commentReactions),
+  parent: one(comments, {
+    fields: [comments.parentId],
+    references: [comments.id],
+    relationName: "comments_parent_id_fk",
+  }),
+  replies: many(comments, { relationName: "comments_parent_id_fk" }),
 }));
 
 export const commentInsertSchema = createInsertSchema(comments);

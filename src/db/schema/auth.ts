@@ -17,8 +17,8 @@ export const users = pgTable("users", {
 
 export const userRelations = relations(users, ({ many }) => ({
   videos: many(videos),
-  videoViews: many(videoViews),
-  videoReactions: many(videoReactions),
+  video_views: many(videoViews),
+  video_reactions: many(videoReactions),
   subscriptions: many(subscriptions, {
     relationName: "subscriptions_viewer_id_fk",
   }),
@@ -26,7 +26,7 @@ export const userRelations = relations(users, ({ many }) => ({
     relationName: "subscriptions_creator_id_fk",
   }),
   comments: many(comments),
-  commentReactions: many(commentReactions),
+  comment_reactions: many(commentReactions),
   playlists: many(playlists),
 }));
 

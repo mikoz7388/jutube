@@ -16,6 +16,8 @@ import {
 } from "drizzle-zod";
 import { relations } from "drizzle-orm";
 import { reactionType, videoVisibility } from "./enums";
+import { playlistVideos } from "./playlists";
+import { comments } from "./comments";
 
 export const videos = pgTable("videos", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -52,6 +54,9 @@ export const videoRelations = relations(videos, ({ one, many }) => ({
     references: [categories.id],
   }),
   views: many(videoViews),
+  reactions: many(videoReactions),
+  playlist_videos: many(playlistVideos),
+  comments: many(comments),
 }));
 
 export const videoInsertSchema = createInsertSchema(videos);
