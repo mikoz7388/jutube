@@ -89,4 +89,95 @@ export const PlaylistsRouter = createTRPCRouter({
 
       return { data, nextCursor };
     }),
+  getLiked: protectedProcedure
+    .input(
+      z.object({
+        cursor: z
+          .object({
+            id: z.string().uuid(),
+            likedAt: z.date(),
+          })
+          .nullish(),
+        limit: z.number().min(1).max(100),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { id: userId } = ctx.user;
+      const { cursor, limit } = input;
+
+      const viewerVideoReactions = db.$with("viewer_video_reactions").as(
+        db
+          .select({
+            videoId: videoReactions.videoId,
+            likedAt: videoReactions.updatedAt,
+          })
+          .from(videoReactions)
+          .where(
+            and(
+              eq(videoReactions.userId, userId),
+              eq(videoReactions.type, "like"),
+            ),
+          ),
+      );
+      const data = await db
+        .with(viewerVideoReactions)
+        .select({
+          ...getTableColumns(videos),
+          user: users,
+          likedAt: viewerVideoReactions.likedAt,
+          viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
+          likeCount: db.$count(
+            videoReactions,
+            and(
+              eq(videoReactions.videoId, videos.id),
+              eq(videoReactions.type, "like"),
+            ),
+          ),
+          dislikeCount: db.$count(
+            videoReactions,
+            and(
+              eq(videoReactions.videoId, videos.id),
+              eq(videoReactions.type, "dislike"),
+            ),
+          ),
+        })
+        .from(videos)
+        .innerJoin(users, eq(users.id, videos.userId))
+        .innerJoin(
+          viewerVideoReactions,
+          eq(videos.id, viewerVideoReactions.videoId),
+        )
+        .where(
+          and(
+            eq(videos.visiblility, "public"),
+            cursor
+              ? or(
+                  lt(viewerVideoReactions.likedAt, cursor.likedAt),
+                  and(
+                    eq(viewerVideoReactions.likedAt, cursor.likedAt),
+                    lt(videos.id, cursor.id),
+                  ),
+                )
+              : undefined,
+          ),
+        )
+        .orderBy(desc(viewerVideoReactions.likedAt), desc(videos.id))
+        .limit(limit + 1); // One more for hasMore check
+
+      const hasMore = data.length > limit;
+      if (hasMore) {
+        data.pop();
+      }
+
+      const lastItem = data[data.length - 1];
+
+      const nextCursor = hasMore
+        ? {
+            id: lastItem.id,
+            likedAt: lastItem.likedAt,
+          }
+        : null;
+
+      return { data, nextCursor };
+    }),
 });
