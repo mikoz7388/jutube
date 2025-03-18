@@ -49,8 +49,8 @@ import { snakeCaseToTitle } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { TUMBNAIL_FALLBACK } from "@/modules/videos/constatns";
-import { ThumbnailUploadModal } from "./thumbnail-upload-modal";
-import { ThumbnailGenerateModal } from "./thumbnail-generate-modal";
+import { ThumbnailUploadModal } from "../components/thumbnail-upload-modal";
+import { ThumbnailGenerateModal } from "../components/thumbnail-generate-modal";
 import { APP_URL } from "@/lib/constants";
 
 interface FormSectionProps {
