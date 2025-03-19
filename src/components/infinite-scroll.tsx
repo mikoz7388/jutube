@@ -1,12 +1,14 @@
 import { useEffect } from "react";
 import { useIntesectionObserver } from "@/hooks/use-intersection-observer";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface InfiniteScrollProps {
   isManual?: boolean;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
   fetchNextPage: () => void;
+  classname?: string;
 }
 
 export function InfiniteScroll({
@@ -14,6 +16,7 @@ export function InfiniteScroll({
   hasNextPage,
   isFetchingNextPage,
   isManual,
+  classname,
 }: InfiniteScrollProps) {
   const { isIntersecting, targetRef } = useIntesectionObserver({
     threshold: 0.5,
@@ -33,7 +36,7 @@ export function InfiniteScroll({
   ]);
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4">
+    <div className={cn("flex flex-col items-center gap-4 p-4", classname)}>
       <div ref={targetRef} className="h-1" />
       {hasNextPage ? (
         <Button
