@@ -60,7 +60,7 @@ export function VideoMenu({
             Add to playlist
           </DropdownMenuItem>
           {onRemove && (
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={onRemove}>
               <Trash2Icon className="mr-2 size-4" />
               Remove
             </DropdownMenuItem>
