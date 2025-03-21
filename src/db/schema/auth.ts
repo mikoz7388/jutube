@@ -8,6 +8,8 @@ import { playlists } from "./playlists";
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
+  bannerUrl: text("banner_url"),
+  bannerKey: text("banner_key"),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull(),
   image: text("image"),
