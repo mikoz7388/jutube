@@ -28,7 +28,7 @@ export function StudioSidebarHeader() {
     return (
       <SidebarMenuItem>
         <SidebarMenuButton asChild tooltip="Your profile">
-          <Link href="/users/current">
+          <Link href={`/users/${user.id}`}>
             <UserAvatar imageUrl={user.image} name={user.name} size="xs" />
             <span className="text-sm">Your profile</span>
           </Link>
@@ -38,7 +38,7 @@ export function StudioSidebarHeader() {
   }
   return (
     <SidebarHeader className="flex items-center justify-center pb-4">
-      <Link href="/users/current">
+      <Link href={`/users/${user.id}`}>
         <UserAvatar
           imageUrl={user.image}
           name={user.name}
