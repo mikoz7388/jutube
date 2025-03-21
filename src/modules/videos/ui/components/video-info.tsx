@@ -37,7 +37,7 @@ export function VideoInfo({ data, onRemove }: VideoInfoProps) {
 
   return (
     <div className="flex gap-2">
-      <Link href={`/users/${data.user.image}`}>
+      <Link href={`/users/${data.user.id}`}>
         <UserAvatar imageUrl={data.user.image} name={data.user.name} />
       </Link>
       <div className="min-w-0 flex-1">
@@ -46,7 +46,7 @@ export function VideoInfo({ data, onRemove }: VideoInfoProps) {
             {data.title}
           </h3>
         </Link>
-        <Link href={`/users/${data.user.image}`}>
+        <Link href={`/users/${data.user.id}`}>
           <UserInfo name={data.user.name} />
         </Link>
         <Link href={`/videos/${data.id}`}>
