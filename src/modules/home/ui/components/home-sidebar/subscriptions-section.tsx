@@ -1,0 +1,92 @@
+"use client";
+
+import {
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { UserAvatar } from "@/components/user-avatar";
+import { trpc } from "@/trpc/client";
+import { ListIcon } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+function SubscrptionsSectionSkeleton() {
+  return (
+    <>
+      {["kocham", "siebie", "bardzo", "mocno"].map((item) => (
+        <SidebarMenuItem key={item}>
+          <SidebarMenuButton disabled>
+            <Skeleton className="size-6 shrink-0 rounded-full" />
+            <Skeleton className="h-4 w-full" />
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+    </>
+  );
+}
+
+export function SubscrptionsSection() {
+  const pathname = usePathname();
+
+  const { data, isLoading } = trpc.subscriptions.getMany.useInfiniteQuery(
+    { limit: 5 },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    },
+  );
+
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Subscriptions</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {isLoading ? (
+            <SubscrptionsSectionSkeleton />
+          ) : (
+            data?.pages
+              .flatMap((page) => page.data)
+              .map((subscription) => (
+                <SidebarMenuItem key={subscription.creatorId}>
+                  <SidebarMenuButton
+                    tooltip={subscription.user.name}
+                    asChild
+                    isActive={pathname === `/users/${subscription.user.id}`}
+                  >
+                    <Link
+                      href={`/users/${subscription.user.id}`}
+                      className="flex items-center gap-4"
+                    >
+                      <UserAvatar
+                        size="xs"
+                        imageUrl={subscription.user.image}
+                        name={subscription.user.name}
+                      />
+                      <span className="text-sm">{subscription.user.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))
+          )}
+          {!isLoading && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === "/subscriptions"}
+              >
+                <Link href="/subscriptions" className="flex items-center gap-4">
+                  <ListIcon className="size-4" />
+                  <span className="text-sm">All subscriptions</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  );
+}
