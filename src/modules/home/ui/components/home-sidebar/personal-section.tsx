@@ -44,7 +44,11 @@ export function PersonalSection() {
                 isActive={pathname === item.url}
                 onClick={() => console.log(`Clicked ${item.title}`)} // TODO: Implement click handler
               >
-                <Link href={item.url} className="flex items-center gap-4">
+                <Link
+                  prefetch
+                  href={item.url}
+                  className="flex items-center gap-4"
+                >
                   <item.icon />
                   <span className="text-sm">{item.title}</span>
                 </Link>

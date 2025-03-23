@@ -10,7 +10,7 @@ export function StudioNavBar() {
     <nav className="fixed left-0 right-0 top-0 z-50 flex h-16 items-center justify-between border-b bg-white px-2 pr-5 shadow-md">
       <div className="flex items-center gap-4">
         <SidebarTrigger />
-        <Link href="/studio">
+        <Link prefetch href="/studio">
           <div className="flex items-center gap-1 p-4">
             <Image src="/logo.svg" height={32} width={32} alt="logo" />
             <p className="text-xl font-semibold tracking-tighter">Studio</p>

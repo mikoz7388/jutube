@@ -42,7 +42,7 @@ export function UserDropdown({
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <Button variant={"ghost"} asChild className="p-0">
-            <Link href={"/studio"}>
+            <Link prefetch href={"/studio"}>
               <ClapperboardIcon /> Studio
             </Link>
           </Button>

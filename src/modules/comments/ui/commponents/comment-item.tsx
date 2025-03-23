@@ -80,7 +80,7 @@ export function CommentItem({
   return (
     <div>
       <div className="flex gap-4">
-        <Link href={`/users/${comment.userId}`}>
+        <Link prefetch href={`/users/${comment.userId}`}>
           <UserAvatar
             name={comment.user.name}
             size={variant === "comment" ? "lg" : "default"}
@@ -89,7 +89,7 @@ export function CommentItem({
         </Link>
         <div className="min-w-0 flex-1">
           <div className="mb-0.5 flex items-center gap-2">
-            <Link href={`/users/${comment.userId}`}>
+            <Link prefetch href={`/users/${comment.userId}`}>
               <span className="pb-0.5 text-sm font-medium">
                 {comment.user.name}
               </span>

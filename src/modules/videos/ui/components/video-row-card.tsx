@@ -92,7 +92,11 @@ export function VideoRowCard({
 
   return (
     <div className={videoRowCardVariants({ size })}>
-      <Link href={`/videos/${data.id}`} className={thumbnailVariants({ size })}>
+      <Link
+        prefetch
+        href={`/videos/${data.id}`}
+        className={thumbnailVariants({ size })}
+      >
         <VideoThumbnail
           imageUrl={data.thumbnailUrl}
           previewUrl={data.previewUrl}
@@ -102,7 +106,7 @@ export function VideoRowCard({
       </Link>
       <div className="min-w-0 flex-1">
         <div className="flex justify-between gap-x-2">
-          <Link href={`/videos/${data.id}`} className="min-w-0 flex-1">
+          <Link prefetch href={`/videos/${data.id}`} className="min-w-0 flex-1">
             <h3
               className={cn(
                 "line-clamp-2 font-medium",

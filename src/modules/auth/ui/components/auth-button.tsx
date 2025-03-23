@@ -16,7 +16,7 @@ export function AuthButton() {
           variant={"outline"}
           className="rounded-full border-blue-500/20 px-4 py-2 text-sm font-medium text-blue-600 shadow-none hover:text-blue-500 [&_svg]:size-5"
         >
-          <Link href={"/sign-in"}>
+          <Link prefetch href={"/sign-in"}>
             <UserCircleIcon />
             Sign In
           </Link>
