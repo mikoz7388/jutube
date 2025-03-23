@@ -12,5 +12,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/studio", "/playlists", "/playlists/history", "/playlists/liked"], // Specify the routes the middleware applies to
+  matcher: [
+    "/studio",
+    "/playlists",
+    "/playlists/history",
+    "/playlists/liked",
+    "/feed/subscribed",
+  ], // Specify the routes the middleware applies to
 };
