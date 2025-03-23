@@ -16,6 +16,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+const errorSchema = z.array(
+  z.object({
+    code: z.string(),
+    path: z.array(z.string()).optional(),
+    message: z.string().optional(),
+    minimum: z.number().optional(),
+    type: z.string().optional(),
+    inclusive: z.boolean().optional(),
+    exact: z.boolean().optional(),
+  }),
+);
+
 interface CommentformProps {
   videoId: string;
   onSuccess?: () => void;
@@ -43,7 +55,36 @@ export function CommentForm({
       onSuccess?.();
     },
     onError: (error) => {
-      if (error.message === "UNAUTHORIZED") {
+      const result = errorSchema.safeParse(JSON.parse(error.message));
+
+      if (result.success) {
+        const errors = result.data;
+        const valueErrors = errors.filter(
+          (err) => err.path && err.path[0] === "value",
+        );
+
+        if (valueErrors.length > 0) {
+          const firstError = valueErrors[0];
+
+          if (firstError.code === "too_small") {
+            toast({
+              title: "Comment too short",
+              description: "Your comment must be at least 1 character long.",
+              variant: "destructive",
+            });
+            return;
+          } else if (firstError.code === "too_big") {
+            toast({
+              title: "Comment too long",
+              description: "Your comment must be at most 1000 characters long.",
+              variant: "destructive",
+            });
+            return;
+          }
+        }
+      }
+
+      if (error.message.includes("UNAUTHORIZED")) {
         toast({
           title: "You are not logged in",
           description: "Log in if you want to comment",

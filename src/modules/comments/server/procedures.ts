@@ -27,7 +27,7 @@ export const commentsRouter = createTRPCRouter({
       z.object({
         videoId: z.string().uuid(),
         parentId: z.string().uuid().nullish(),
-        value: z.string(),
+        value: z.string().trim().min(1).max(1000),
       }),
     )
     .mutation(async ({ input, ctx }) => {
