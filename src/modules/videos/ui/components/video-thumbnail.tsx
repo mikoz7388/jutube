@@ -32,6 +32,7 @@ export function VideoThumbnail({
           alt={title}
           fill
           className="h-full w-full object-cover group-hover:opacity-0"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         <Image
           unoptimized={!!previewUrl}
@@ -39,6 +40,7 @@ export function VideoThumbnail({
           alt={title}
           fill
           className="h-full w-full object-cover opacity-0 group-hover:opacity-100"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
       </div>
 
