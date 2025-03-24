@@ -52,6 +52,7 @@ import { TUMBNAIL_FALLBACK } from "@/modules/videos/constatns";
 import { ThumbnailUploadModal } from "../components/thumbnail-upload-modal";
 import { ThumbnailGenerateModal } from "../components/thumbnail-generate-modal";
 import { APP_URL } from "@/lib/constants";
+import { toast } from "sonner";
 
 interface FormSectionProps {
   videoId: string;
@@ -73,7 +74,6 @@ function FormSectionSkeleton() {
 
 function FormSectionSuspense({ videoId }: FormSectionProps) {
   const router = useRouter();
-  const { toast } = useToast();
   const utils = trpc.useUtils();
 
   const [isCopied, setIsCopied] = useState(false);
@@ -89,34 +89,21 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
     onSuccess: () => {
       utils.studio.getMany.invalidate();
       utils.studio.getOne.invalidate({ id: videoId });
-      toast({
-        title: "Video updated",
-      });
+      toast("Video updated");
     },
     onError: (e) => {
-      toast({
-        title: "Error",
-        description: e.message,
-        variant: "destructive",
-      });
+      toast.error("Error", { description: e.message });
     },
   });
 
   const remove = trpc.videos.remove.useMutation({
     onSuccess: (data) => {
       utils.studio.getMany.invalidate();
-      toast({
-        title: "Video removed",
-        description: `${data.title} has been removed`,
-      });
+      toast("Video removed", { description: `${data.title} has been removed` });
       router.push("/studio");
     },
     onError: (e) => {
-      toast({
-        title: "Error",
-        description: e.message,
-        variant: "destructive",
-      });
+      toast.error("Error", { description: e.message });
     },
   });
   const revalidate = trpc.videos.revlidate.useMutation({
@@ -124,16 +111,10 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
       utils.studio.getMany.invalidate();
       utils.studio.getOne.invalidate({ id: videoId });
 
-      toast({
-        title: "Video revalidated",
-      });
+      toast("Video revalidated");
     },
     onError: () => {
-      toast({
-        title: "Error",
-        description: "Something went wrong",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Something went wrong" });
     },
   });
 
@@ -141,48 +122,32 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
     onSuccess: () => {
       utils.studio.getMany.invalidate();
       utils.studio.getOne.invalidate({ id: videoId });
-      toast({
-        title: "Thumbnail restored",
-      });
+      toast("Thumbnail restored");
     },
     onError: (e) => {
-      toast({
-        title: "Error",
-        description: e.message,
-        variant: "destructive",
-      });
+      toast.error("Error", { description: e.message });
     },
   });
 
   const generateTitle = trpc.videos.generateTitle.useMutation({
     onSuccess: () => {
-      toast({
-        title: "The title is being generated",
+      toast("The title is being generated", {
         description: "This may take some time",
       });
     },
     onError: (e) => {
-      toast({
-        title: "Error",
-        description: e.message,
-        variant: "destructive",
-      });
+      toast.error("Error", { description: e.message });
     },
   });
 
   const generateDescription = trpc.videos.generateDescription.useMutation({
     onSuccess: () => {
-      toast({
-        title: "The description generation has been scheduled",
+      toast("The description generation has been scheduled", {
         description: "This may take some time",
       });
     },
     onError: (e) => {
-      toast({
-        title: "Error",
-        description: e.message,
-        variant: "destructive",
-      });
+      toast.error("Error", { description: e.message });
     },
   });
 
@@ -200,7 +165,7 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
   const onCopy = async () => {
     await navigator.clipboard.writeText(fullVideoUrl);
     setIsCopied(true);
-
+    toast.info("Video link copied to clipboard");
     setTimeout(() => {
       setIsCopied(false);
     }, 2000);

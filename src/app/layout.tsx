@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Toasterold } from "@/components/ui/toaster";
 import { TRPCProvider } from "@/trpc/client";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,7 +24,8 @@ export default function RootLayout({
       <TRPCProvider>
         <body className={inter.className}>
           {children}
-          <Toaster />
+          <Toaster richColors />
+          <Toasterold />
         </body>
       </TRPCProvider>
     </html>
