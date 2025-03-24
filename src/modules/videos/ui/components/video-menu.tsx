@@ -44,7 +44,7 @@ export function VideoMenu({
         open={isPlaylistAddModalOpen}
         videoId={videoId}
       />
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant={variant} size="icon" className="rounded-full">
             <MoreVerticalIcon />
