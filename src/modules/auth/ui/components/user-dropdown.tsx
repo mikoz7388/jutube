@@ -11,6 +11,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { authClient } from "@/lib/auth-client";
 import { ClapperboardIcon, LogOutIcon } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export function UserDropdown({
   imageURL,
@@ -30,7 +31,13 @@ export function UserDropdown({
         <DropdownMenuItem>
           <Button
             onClick={async () => {
-              await authClient.signOut();
+              await authClient.signOut({
+                fetchOptions: {
+                  onSuccess: () => {
+                    redirect("/");
+                  },
+                },
+              });
             }}
             variant={"ghost"}
             className="p-0"
