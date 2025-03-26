@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { signIn } from "@/lib/auth-client";
@@ -22,7 +21,6 @@ export default function SignIn({ redirectTo }: { redirectTo: string }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
 
   const handleSignIn = async () => {
     setLoading(true);
@@ -30,7 +28,6 @@ export default function SignIn({ redirectTo }: { redirectTo: string }) {
       await signIn.email({
         email,
         password,
-        rememberMe,
         callbackURL: redirectTo,
       });
     } catch (error) {
@@ -82,16 +79,6 @@ export default function SignIn({ redirectTo }: { redirectTo: string }) {
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="remember"
-              onClick={() => {
-                setRememberMe(!rememberMe);
-              }}
-            />
-            <Label htmlFor="remember">Remember me</Label>
-          </div>
-
           <Button
             type="submit"
             className="w-full"
@@ -133,7 +120,7 @@ export default function SignIn({ redirectTo }: { redirectTo: string }) {
           </div>
         </div>
         <CardFooter className="mt-4 text-center text-sm">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             href="/sign-up"
             className="ml-2 font-medium text-primary underline underline-offset-4 hover:opacity-80"

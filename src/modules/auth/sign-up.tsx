@@ -18,6 +18,7 @@ import { signUp } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { convertImageToBase64 } from "@/lib/utils";
 
 export function SignUp() {
   const [firstName, setFirstName] = useState("");
@@ -209,13 +210,4 @@ export function SignUp() {
       </CardFooter>
     </Card>
   );
-}
-
-async function convertImageToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 }
