@@ -38,6 +38,7 @@ export function VideoOwner({ user, videoId }: VideoOwnerProps) {
           </div>
         </div>
       </Link>
+      {/* TODO: hydration error */}
       {session?.user.id === user.id ? (
         <Button asChild className="rounded-full" variant="secondary">
           <Link prefetch href={`/studio/videos/${videoId}`}>

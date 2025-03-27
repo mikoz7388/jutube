@@ -82,7 +82,7 @@ export const POST = async (request: Request) => {
         .from(videos)
         .where(eq(videos.muxUploadId, data.upload_id));
 
-      if (!existingVideo.thumbnailKey || !existingVideo.previewKey) {
+      if (!existingVideo?.thumbnailKey || !existingVideo?.previewKey) {
         const utapi = new UTApi();
         const [uploadedThumbnailUrl, uploadedPreviewUrl] =
           await utapi.uploadFilesFromUrl([tempThumbnailUrl, tempPreviewUrl]);
