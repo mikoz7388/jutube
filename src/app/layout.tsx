@@ -8,7 +8,6 @@ import { TRPCProvider } from "@/trpc/client";
 import { Toaster } from "sonner";
 import { NewRelicBrowser } from "@/components/new-relic-browser";
 
-
 const inter = Inter({
   subsets: ["latin"],
 });
@@ -37,6 +36,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <NewRelicBrowser />
+
       <TRPCProvider>
         <body className={inter.className}>
           {children}

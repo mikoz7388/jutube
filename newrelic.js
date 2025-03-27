@@ -9,8 +9,12 @@ exports.config = {
   /**
    * Array of application names.
    */
+<<<<<<< HEAD
   app_name: [process.env.NEW_RELIC_APP_NAME || "jutuboza-browser"],
 
+=======
+  app_name: [process.env.NEW_RELIC_APP_NAME],
+>>>>>>> 8bf6149 (feat: integrate New Relic)
   /**
    * Your New Relic license key.
    */
