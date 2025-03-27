@@ -7,7 +7,7 @@
     "dev:webhook": "ngrok http --url=slug-daring-sloth.ngrok-free.app 3000",
     "dev:all": "concurrently \"bun run dev:webhook\" \"bun run dev\"",
     "build": "next build",
-    "start": "next start",
+    "start": "bun run --preload=./newrelic-preload.js next start",
     "typecheck": "tsc --noEmit",
     "lint": "next lint"
   },
@@ -67,6 +67,7 @@
     "embla-carousel-react": "^8.5.2",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.474.0",
+    "newrelic": "^12.16.1",
     "next": "^15.2.0",
     "next-themes": "^0.4.4",
     "react": "^19.0.0",
@@ -87,6 +88,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/newrelic": "^9.14.8",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
