@@ -22,17 +22,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  if (newrelic.agent.collector.isConnected() === false) {
-    await new Promise((resolve) => {
-      newrelic.agent.on("connected", resolve);
-    });
-  }
-
-  const browserTimingHeader = newrelic.getBrowserTimingHeader({
-    hasToRemoveScriptWrapper: true,
-    allowTransactionlessInjection: true,
-  });
-
   return (
     <html lang="en">
       <NewRelicBrowser />
