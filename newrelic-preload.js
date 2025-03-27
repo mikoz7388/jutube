@@ -1,3 +1,3 @@
-// eslint-disable-next-line
+/* eslint-disable */
 require("newrelic");
-console.log("newrelic loaded");
+

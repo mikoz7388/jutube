@@ -2,12 +2,15 @@ import type { NextConfig } from "next";
 // eslint-disable-next-line
 const nrExternals = require("newrelic/load-externals");
 
+import nrExternals from "newrelic/load-externals";
+
 const nextConfig: NextConfig = {
   serverExternalPackages: ["newrelic"],
   webpack: (config) => {
     nrExternals(config);
     return config;
   },
+
   output: "standalone",
   eslint: {
     ignoreDuringBuilds: true,

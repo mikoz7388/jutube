@@ -10,13 +10,16 @@ exports.config = {
    * Array of application names.
    */
   app_name: [process.env.NEW_RELIC_APP_NAME || "jutuboza-browser"],
+
   /**
    * Your New Relic license key.
    */
   license_key: process.env.NEW_RELIC_LICENSE_KEY,
   logging: {
+
     level: "info",
     filepath: "/tmp/newrelic_agent.log",
+
   },
   /**
    * When true, all request headers except for those listed in attributes.exclude
@@ -24,9 +27,11 @@ exports.config = {
    * attributes include/exclude lists.
    */
   allow_all_headers: true,
+
   browser_monitoring: {
     enable: true,
   },
+
   attributes: {
     /**
      * Prefix of attributes to exclude from all destinations. Allows * as wildcard
