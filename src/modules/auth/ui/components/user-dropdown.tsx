@@ -9,9 +9,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserAvatar } from "@/components/user-avatar";
 import { authClient } from "@/lib/auth-client";
+import { trpc } from "@/trpc/client";
 import { ClapperboardIcon, LogOutIcon } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export function UserDropdown({
   imageURL,
@@ -20,6 +21,9 @@ export function UserDropdown({
   imageURL: string | undefined;
   name: string;
 }) {
+  const router = useRouter();
+  const utils = trpc.useUtils();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -34,7 +38,8 @@ export function UserDropdown({
               await authClient.signOut({
                 fetchOptions: {
                   onSuccess: () => {
-                    redirect("/");
+                    utils.videos.getMany.invalidate();
+                    router.push("/");
                   },
                 },
               });

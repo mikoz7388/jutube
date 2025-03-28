@@ -4,12 +4,6 @@ export async function middleware(request: NextRequest) {
   try {
     console.log("Middleware running on path:", request.nextUrl.pathname);
 
-    const allCookies = request.cookies.getAll();
-    console.log(
-      "Available cookies:",
-      allCookies.map((c) => c.name),
-    );
-
     // const sessionCookie = getSessionCookie(request, {
     //   cookieName: "session_token",
     // }); //edguje se
