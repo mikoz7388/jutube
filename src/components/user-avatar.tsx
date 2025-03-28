@@ -39,7 +39,7 @@ export function UserAvatar({
       <AvatarImage src={imageUrl ?? undefined} alt={name} />
       <AvatarFallback>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="siema" src="/user-placeholder.svg" />
+        <img alt="avatar placeholder" src="/user-placeholder.svg" />
       </AvatarFallback>
     </Avatar>
   );

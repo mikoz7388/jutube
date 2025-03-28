@@ -9,8 +9,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { UserAvatar } from "@/components/user-avatar";
 import { commentInsertSchema } from "@/db/schema/comments";
+import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
-import { authClient } from "@/lib/auth-client";
 import { trpc } from "@/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -43,8 +43,7 @@ export function CommentForm({
   parentId,
   onCancel,
 }: CommentformProps) {
-  const session = authClient.useSession();
-  const user = session.data?.user;
+  const { user } = useAuth();
 
   const utils = trpc.useUtils();
   const create = trpc.comments.create.useMutation({

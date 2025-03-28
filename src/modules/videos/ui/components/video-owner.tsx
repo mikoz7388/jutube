@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { VideoGetOneOutput } from "../../types";
 import { UserAvatar } from "@/components/user-avatar";
-
 import { Button } from "@/components/ui/button";
 import { SubscribeButton } from "@/modules/subscriptions/ui/components/subscribe-button";
-import { authClient } from "@/lib/auth-client";
 import { UserInfo } from "@/modules/users/ui/components/user-info";
 import { useSubscription } from "@/modules/subscriptions/hooks/use-subscription";
+import { useAuth } from "@/hooks/use-auth";
 
 interface VideoOwnerProps {
   user: VideoGetOneOutput["user"];
@@ -14,7 +13,7 @@ interface VideoOwnerProps {
 }
 
 export function VideoOwner({ user, videoId }: VideoOwnerProps) {
-  const { data: session } = authClient.useSession();
+  const { isReady, loggedUserId } = useAuth();
   const { isPending, onClick } = useSubscription({
     userId: user.id,
     isSubscribed: user.viewerSubscribed,
@@ -38,21 +37,21 @@ export function VideoOwner({ user, videoId }: VideoOwnerProps) {
           </div>
         </div>
       </Link>
-      {session?.user.id === user.id ? (
-        <Button asChild className="rounded-full" variant="secondary">
-          <Link prefetch href={`/studio/videos/${videoId}`}>
-            {" "}
-            Edit video
-          </Link>
-        </Button>
-      ) : (
-        <SubscribeButton
-          onClick={onClick}
-          disabled={isPending}
-          isSubscribed={user.viewerSubscribed}
-          className="flex-none"
-        />
-      )}
+      {isReady &&
+        (loggedUserId === user.id ? (
+          <Button asChild className="rounded-full" variant="secondary">
+            <Link prefetch href={`/studio/videos/${videoId}`}>
+              Edit video
+            </Link>
+          </Button>
+        ) : (
+          <SubscribeButton
+            onClick={onClick}
+            disabled={isPending}
+            isSubscribed={user.viewerSubscribed}
+            className="flex-none"
+          />
+        ))}
     </div>
   );
 }

@@ -1,12 +1,12 @@
 import { UserAvatar } from "@/components/user-avatar";
 import { userGetOneOutput } from "../../types";
-import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { SubscribeButton } from "@/modules/subscriptions/ui/components/subscribe-button";
 import { useSubscription } from "@/modules/subscriptions/hooks/use-subscription";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/hooks/use-auth";
 
 interface UserPageInfoProps {
   user: userGetOneOutput;
@@ -39,9 +39,7 @@ export function UserPageInfoSkeleton() {
 }
 
 export function UserPageInfo({ user }: UserPageInfoProps) {
-  const auth = authClient.useSession();
-  const currentUserId = auth.data?.user.id;
-  const isLoaded = !!currentUserId;
+  const { isLoggedIn, isReady, loggedUserId } = useAuth();
 
   const { isPending, onClick } = useSubscription({
     userId: user.id,
@@ -68,24 +66,25 @@ export function UserPageInfo({ user }: UserPageInfoProps) {
             </div>
           </div>
         </div>
-        {user.id === currentUserId ? (
-          <Button
-            variant="secondary"
-            asChild
-            className="mt-3 w-full rounded-full"
-          >
-            <Link prefetch href="/studio">
-              Go to studio
-            </Link>
-          </Button>
-        ) : (
-          <SubscribeButton
-            disabled={!isLoaded || isPending}
-            isSubscribed={user.viewerSubscribed}
-            onClick={onClick}
-            className="mt-3 w-full"
-          />
-        )}
+        {isReady &&
+          (loggedUserId === user.id ? (
+            <Button
+              variant="secondary"
+              asChild
+              className="mt-3 w-full rounded-full"
+            >
+              <Link prefetch href="/studio">
+                Go to studio
+              </Link>
+            </Button>
+          ) : (
+            <SubscribeButton
+              disabled={!isLoggedIn || isPending}
+              isSubscribed={user.viewerSubscribed}
+              onClick={onClick}
+              className="mt-3 w-full"
+            />
+          ))}
       </div>
       <div className="hidden items-start gap-4 md:flex">
         <UserAvatar
@@ -93,7 +92,7 @@ export function UserPageInfo({ user }: UserPageInfoProps) {
           imageUrl={user.image}
           name={user.name}
           className={cn(
-            currentUserId === user.id &&
+            loggedUserId === user.id &&
               "cursor-pointer transition-opacity duration-300 hover:opacity-80",
           )}
           onClick={() => -{}}
@@ -105,20 +104,21 @@ export function UserPageInfo({ user }: UserPageInfoProps) {
             <span>&bull;</span>
             <span>{user.videosCount} videos</span>
           </div>
-          {user.id === currentUserId ? (
-            <Button variant="secondary" asChild className="mt-3 rounded-full">
-              <Link prefetch href="/studio">
-                Go to studio
-              </Link>
-            </Button>
-          ) : (
-            <SubscribeButton
-              disabled={!isLoaded || isPending}
-              isSubscribed={user.viewerSubscribed}
-              onClick={onClick}
-              className="mt-3"
-            />
-          )}
+          {isReady &&
+            (loggedUserId === user.id ? (
+              <Button variant="secondary" asChild className="mt-3 rounded-full">
+                <Link prefetch href="/studio">
+                  Go to studio
+                </Link>
+              </Button>
+            ) : (
+              <SubscribeButton
+                disabled={!isLoggedIn || isPending}
+                isSubscribed={user.viewerSubscribed}
+                onClick={onClick}
+                className="mt-3"
+              />
+            ))}
         </div>
       </div>
     </div>

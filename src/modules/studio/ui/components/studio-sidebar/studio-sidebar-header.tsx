@@ -6,11 +6,11 @@ import {
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/user-avatar";
-import { useSession } from "@/lib/auth-client";
+import { useAuth } from "@/hooks/use-auth";
 import Link from "next/link";
 
 export function StudioSidebarHeader() {
-  const user = useSession().data?.user;
+  const { user } = useAuth();
   const { state } = useSidebar();
 
   if (!user)

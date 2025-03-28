@@ -19,12 +19,12 @@ import {
   ThumbsUpIcon,
   Trash2Icon,
 } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { CommentForm } from "./comment-form";
 import { CommentReplies } from "./comment-replies";
+import { useAuth } from "@/hooks/use-auth";
 
 interface CommentItemProps {
   comment: CommentsGetManyOutput["items"][number];
@@ -35,7 +35,7 @@ export function CommentItem({
   comment,
   variant = "comment",
 }: CommentItemProps) {
-  const user = authClient.useSession().data?.user;
+  const { loggedUserId, isReady } = useAuth();
 
   const [isReplyOpen, setIsReplyOpen] = useState(false);
   const [isRepliesOpen, setIsRepliesOpen] = useState(false);
@@ -148,23 +148,24 @@ export function CommentItem({
             )}
           </div>
         </div>
-        {comment.user.id === user?.id && variant === "reply" && (
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="size-8">
-                <MoreVerticalIcon />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => remove.mutate({ id: comment.id })}
-              >
-                <Trash2Icon className="size-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+        {isReady &&
+          (loggedUserId === comment.user.id && variant === "reply" ? (
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="size-8">
+                  <MoreVerticalIcon />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => remove.mutate({ id: comment.id })}
+                >
+                  <Trash2Icon className="size-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : null)}
         {variant === "comment" && (
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
@@ -178,14 +179,15 @@ export function CommentItem({
                 Reply
               </DropdownMenuItem>
 
-              {comment.user.id === user?.id ? (
-                <DropdownMenuItem
-                  onClick={() => remove.mutate({ id: comment.id })}
-                >
-                  <Trash2Icon className="size-4" />
-                  Delete
-                </DropdownMenuItem>
-              ) : null}
+              {isReady &&
+                (loggedUserId === comment.user.id ? (
+                  <DropdownMenuItem
+                    onClick={() => remove.mutate({ id: comment.id })}
+                  >
+                    <Trash2Icon className="size-4" />
+                    Delete
+                  </DropdownMenuItem>
+                ) : null)}
             </DropdownMenuContent>
           </DropdownMenu>
         )}

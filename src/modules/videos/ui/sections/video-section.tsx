@@ -7,7 +7,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { VideoPlayer, VideoPlayerSkeleton } from "../components/video-player";
 import VideoBanner from "../components/video-banner";
 import { VideoTopRow, VideoTopRowSkeleton } from "../components/video-top-row";
-import { authClient } from "@/lib/auth-client";
+import { useAuth } from "@/hooks/use-auth";
 
 interface VideosSectionProps {
   videoId: string;
@@ -33,7 +33,7 @@ function VideosSectionSkeleton() {
 }
 
 const VideosSectionSuspense = ({ videoId }: VideosSectionProps) => {
-  const user = authClient.useSession();
+  const { session } = useAuth();
 
   const utils = trpc.useUtils();
   const [video] = trpc.videos.getOne.useSuspenseQuery({ id: videoId });
@@ -44,7 +44,7 @@ const VideosSectionSuspense = ({ videoId }: VideosSectionProps) => {
   });
 
   const handlePlay = () => {
-    if (!user.data?.session) return;
+    if (!session) return;
 
     createView.mutate({ videoId });
   };
