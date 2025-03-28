@@ -1,14 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionCookie } from "better-auth/cookies";
 
 export async function middleware(request: NextRequest) {
-  const sessionCookie = getSessionCookie(request);
-  if (!sessionCookie) {
+  try {
+    console.log("Middleware running on path:", request.nextUrl.pathname);
+
+    const allCookies = request.cookies.getAll();
+    console.log(
+      "Available cookies:",
+      allCookies.map((c) => c.name),
+    );
+
+    // const sessionCookie = getSessionCookie(request, {
+    //   cookieName: "session_token",
+    // }); //edguje se
+    const sessionCookie = request.cookies
+      .getAll()
+      .find((c) => c.name.includes("session_token"))?.value;
+
+    console.log("Session cookie found:", !!sessionCookie, sessionCookie);
+
+    if (!sessionCookie) {
+      const signInUrl = new URL("/sign-in", request.url);
+      signInUrl.searchParams.set("redirectTo", request.url);
+      return NextResponse.redirect(signInUrl);
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Middleware error:", error);
+
     const signInUrl = new URL("/sign-in", request.url);
-    signInUrl.searchParams.set("redirectTo", request.url);
     return NextResponse.redirect(signInUrl);
   }
-  return NextResponse.next();
 }
 
 export const config = {
@@ -18,5 +41,5 @@ export const config = {
     "/playlists/history",
     "/playlists/liked",
     "/feed/subscribed",
-  ], // Specify the routes the middleware applies to
+  ],
 };
