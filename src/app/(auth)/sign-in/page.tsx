@@ -1,4 +1,4 @@
-import SignIn from "../../../modules/auth/sign-in";
+import { SignIn } from "@/modules/auth/sign-in";
 
 type SearchParams = Promise<{ redirectTo: string | undefined }>;
 
