@@ -4,7 +4,6 @@ import "./globals.css";
 import { Toaster as Toasterold } from "@/components/ui/toaster";
 import { TRPCProvider } from "@/trpc/client";
 import { Toaster } from "sonner";
-import newrelic from "newrelic";
 import Script from "next/script";
 
 const inter = Inter({
@@ -12,39 +11,29 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Jutube",
-  description: "A YouTube clone",
+  title: "Jutuboza",
+  description: "Nice video watching site",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  if (newrelic.agent.collector.isConnected() === false) {
-    await new Promise((resolve) => {
-      newrelic.agent.on("connected", resolve);
-    });
-  }
-
-  const browserTimingHeader = newrelic.getBrowserTimingHeader({
-    hasToRemoveScriptWrapper: true,
-    allowTransactionlessInjection: true,
-  });
-
   return (
     <html lang="en">
-      <Script
-        id="nr-browser-agent"
-        dangerouslySetInnerHTML={{ __html: browserTimingHeader }}
-      />
-      <TRPCProvider>
-        <body className={inter.className}>
+      <body className={inter.className}>
+        <Script
+          src="/scripts/newrelic.js"
+          strategy="afterInteractive"
+          id="newrelic-script"
+        />
+        <TRPCProvider>
           {children}
           <Toaster richColors />
           <Toasterold />
-        </body>
-      </TRPCProvider>
+        </TRPCProvider>
+      </body>
     </html>
   );
 }
