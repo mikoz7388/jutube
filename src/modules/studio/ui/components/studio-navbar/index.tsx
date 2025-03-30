@@ -18,7 +18,7 @@ export function StudioNavBar() {
         </Link>
       </div>
 
-      <div className="flex flex-shrink-0 items-center gap-4">
+      <div className="flex shrink-0 items-center gap-4">
         <StudioUploadModal />
         <AuthButton />
       </div>

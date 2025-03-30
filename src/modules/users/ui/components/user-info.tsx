@@ -6,11 +6,11 @@ import {
 import { cn } from "@/lib/utils";
 import { cva, VariantProps } from "class-variance-authority";
 
-const userInfoVariants = cva("flex item-center gap-1", {
+const userInfoVariants = cva("item-center flex gap-1", {
   variants: {
     size: {
       default: "[&_p]:text-sm [&_svg]:size-4",
-      lg: "[&_p]:text-base [&_svg]:size-5 [&_p]:font-medium [&_p]:text-black",
+      lg: "[&_p]:text-base [&_p]:font-medium [&_p]:text-black [&_svg]:size-5",
       sm: "[&_p]:text-xs [&_svg]:size-3.5",
     },
   },

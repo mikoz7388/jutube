@@ -13,7 +13,7 @@ export function StudioLayout({ children }: StudioLayoutProps) {
         <StudioNavBar />
         <div className="flex">
           <StudioSidebar />
-          <main className="flex-1 overflow-y-auto pt-[4rem]">{children}</main>
+          <main className="flex-1 overflow-y-auto pt-16">{children}</main>
         </div>
       </div>
     </SidebarProvider>

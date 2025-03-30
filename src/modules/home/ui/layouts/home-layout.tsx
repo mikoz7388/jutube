@@ -13,7 +13,7 @@ export function HomeLayout({ children }: HomeLayoutProps) {
         <HomeNavBar />
         <div className="flex">
           <HomeSidebar />
-          <main className="flex-1 overflow-y-auto pt-[4rem]">{children}</main>
+          <main className="flex-1 overflow-y-auto pt-16">{children}</main>
         </div>
       </div>
     </SidebarProvider>
