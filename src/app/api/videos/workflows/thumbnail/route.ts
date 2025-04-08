@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { videos } from "@/db/schema/videos";
 import { serve } from "@upstash/workflow/nextjs";
 import { and, eq } from "drizzle-orm";
-import { UTApi, UTFile } from "uploadthing/server";
+import { UTApi } from "uploadthing/server";
 import { HfInference } from "@huggingface/inference";
 import { env } from "@/config/env";
 
@@ -49,7 +49,9 @@ export const { POST } = serve<InputType>(async (context) => {
 
       const utapi = new UTApi();
 
-      const upload = await utapi.uploadFiles(new File([response], "text.jpeg"));
+      const upload = await utapi.uploadFiles(
+        new File([response], `${existingVideo.id}.jpeg`),
+      );
       console.log(upload.error, upload.data?.size);
 
       return {
@@ -62,7 +64,7 @@ export const { POST } = serve<InputType>(async (context) => {
     }
   });
 
-  const savedImage = await context.run("delete-prev-thumbnail", async () => {
+  await context.run("delete-prev-thumbnail", async () => {
     const utapi = new UTApi();
 
     if (existingVideo.thumbnailKey) {

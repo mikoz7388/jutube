@@ -1,3 +1,4 @@
+import { env } from "@/config/env";
 import { db } from "@/db";
 import { videos } from "@/db/schema/videos";
 import { mux } from "@/lib/mux";
