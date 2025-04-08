@@ -48,6 +48,7 @@
     "@radix-ui/react-toggle-group": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@sinclair/typebox": "^0.34.33",
+    "@t3-oss/env-nextjs": "^0.12.0",
     "@tailwindcss/postcss": "^4.0.15",
     "@tanstack/react-query": "^5.66.0",
     "@trpc/client": "^11.0.0-rc.747",

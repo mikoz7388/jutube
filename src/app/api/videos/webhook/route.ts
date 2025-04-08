@@ -12,7 +12,7 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { UTApi } from "uploadthing/server";
 
-const SIGNINIG_SECRET = process.env.MUX_WEBHOOK_SECRET!;
+const SIGNINIG_SECRET = env.MUX_WEBHOOK_SECRET!;
 
 type WebhookEvent =
   | VideoAssetCreatedWebhookEvent

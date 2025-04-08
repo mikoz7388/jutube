@@ -4,6 +4,7 @@ import { serve } from "@upstash/workflow/nextjs";
 import { and, eq } from "drizzle-orm";
 import { UTApi, UTFile } from "uploadthing/server";
 import { HfInference } from "@huggingface/inference";
+import { env } from "@/config/env";
 
 interface InputType {
   userId: string;
@@ -32,7 +33,7 @@ export const { POST } = serve<InputType>(async (context) => {
     console.log("Starting thumbnail generation with HF");
 
     try {
-      const hf = new HfInference(process.env.HUGGINGFACE_TOKEN);
+      const hf = new HfInference(env.HUGGINGFACE_TOKEN);
       console.log("HF client initialized");
 
       const response = await hf.textToImage({

@@ -29,6 +29,7 @@ import { workflow } from "@/lib/qstash";
 import { users } from "@/db/schema/auth";
 import { subscriptions } from "@/db/schema/subscriptions";
 import { APP_URL } from "@/lib/constants";
+import { env } from "@/config/env";
 
 export const videosRouter = createTRPCRouter({
   getOne: baseProcedure
@@ -346,7 +347,7 @@ export const videosRouter = createTRPCRouter({
       const { id: userId } = ctx.user;
 
       const { workflowRunId } = await workflow.trigger({
-        url: `${process.env.UPSTASH_WORKFLOW_URL}/api/videos/workflows/thumbnail`,
+        url: `${env.UPSTASH_WORKFLOW_URL}/api/videos/workflows/thumbnail`,
         body: { userId, videoId: input.id, prompt: input.prompt },
       });
       return workflowRunId;
@@ -356,7 +357,7 @@ export const videosRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id: userId } = ctx.user;
       const { workflowRunId } = await workflow.trigger({
-        url: `${process.env.UPSTASH_WORKFLOW_URL}/api/videos/workflows/title`,
+        url: `${env.UPSTASH_WORKFLOW_URL}/api/videos/workflows/title`,
         body: { userId, videoId: input.id },
       });
       return workflowRunId;
@@ -366,7 +367,7 @@ export const videosRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id: userId } = ctx.user;
       const { workflowRunId } = await workflow.trigger({
-        url: `${process.env.UPSTASH_WORKFLOW_URL}/api/videos/workflows/description`,
+        url: `${env.UPSTASH_WORKFLOW_URL}/api/videos/workflows/description`,
         body: { userId, videoId: input.id },
       });
       return workflowRunId;
